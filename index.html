@@ -18,6 +18,14 @@
 <meta name="twitter:title" content="Leah Chang | Ocean Portfolio">
 <meta name="twitter:description" content="Mermaid performer, youth ocean sustainability advocate and TEDx Youth speaker.">
 <meta name="twitter:image" content="https://xrurika.github.io/Leah-Chang/og-image.jpg">
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-5LD9XG2S"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  /* Safe event helper: never sends names, emails or message text */
+  function track(name, params){ try{ gtag('event', name, params || {}); }catch(e){} }
+</script>
 <script src="config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -740,7 +748,7 @@ body.playing .hpearl{display:block}
   });
 
   var current=null,opener=null;
-  function openM(id,btn){current=document.getElementById(id);opener=btn;if(id==='modal-works')showList();if(id==='modal-about')newNote();current.classList.add('open');var x=current.querySelector('[data-close]');if(x)x.focus();}
+  function openM(id,btn){track('open_section',{section:id.replace('modal-','')});current=document.getElementById(id);opener=btn;if(id==='modal-works')showList();if(id==='modal-about')newNote();current.classList.add('open');var x=current.querySelector('[data-close]');if(x)x.focus();}
   function closeM(){if(!current)return;sfx('close');current.classList.remove('open');if(opener)opener.focus();current=null;}
   document.querySelectorAll('[data-open]').forEach(function(b){b.addEventListener('click',function(){openM(b.getAttribute('data-open'),b);});});
   document.querySelectorAll('[data-close]').forEach(function(b){b.addEventListener('click',closeM);});
@@ -1304,7 +1312,7 @@ body.playing .hpearl{display:block}
       }
       btn.disabled=true;say('Sending\u2026');
       fetch(CONTACT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({name:d.name,email:d.email,subject:d.subject,message:d.message,page:location.href})})
-        .then(function(){last=Date.now();say('Message sent. Thank you!','ok');f.reset();})
+        .then(function(){last=Date.now();track('contact_submit');say('Message sent. Thank you!','ok');f.reset();})
         .catch(function(){say('Could not send. Please email murtail.lab@gmail.com instead.','err');})
         .then(function(){btn.disabled=false;});
     });
