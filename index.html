@@ -435,6 +435,16 @@ body.playing .hpearl{display:block}
 #lang button.on{background:var(--ink);color:#FBF6E6}
 #lang button:focus-visible{outline:2px solid var(--sea);outline-offset:-3px}
 @media (max-width:720px){#topbar{right:10px;top:10px;gap:6px}#topbar #snd{width:32px;height:32px}#topbar #snd svg{width:16px;height:16px}#lang{height:32px;font-size:11px}#lang button{padding:0 10px}}
+
+.vbox{display:block;position:relative;width:100%;aspect-ratio:16/9;margin:14px 0 4px;padding:0;border:1px solid var(--rope);border-radius:10px;overflow:hidden;cursor:pointer;color:#fff;background:linear-gradient(rgba(15,76,92,.55),rgba(10,40,52,.75)),#0F4C5C url(bg-ocean.jpg) center/cover;text-align:center}
+.vbox.short{aspect-ratio:9/16;width:min(100%,300px);max-height:62vh}
+.vbox:hover .vplay{transform:translate(-50%,-62%) scale(1.07)}
+.vbox:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
+.vplay{position:absolute;left:50%;top:50%;width:58px;height:58px;border-radius:50%;background:rgba(251,246,230,.92);transform:translate(-50%,-62%);transition:transform .2s;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+.vplay:after{content:"";position:absolute;left:23px;top:17px;border-style:solid;border-width:12px 0 12px 19px;border-color:transparent transparent transparent var(--ink)}
+.vlab{position:absolute;left:0;right:0;bottom:12px;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em}
+.vbox.on{cursor:default;background:#000}
+.vbox iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 html[lang="zh-Hant"]{--sans:'Noto Sans TC','PingFang TC','Microsoft JhengHei',system-ui,sans-serif;--mono:'Noto Sans TC','PingFang TC','Microsoft JhengHei',ui-monospace,monospace}
 #ct-form label{line-height:18px}
 html[lang="zh-Hant"] .big{letter-spacing:0;line-height:1.1}
@@ -737,6 +747,34 @@ html[lang="zh-Hant"] .big{letter-spacing:0;line-height:1.1}
   }
   function showList(){curDetail=-1;paper.classList.remove('has-photos');detail.hidden=true;listView.hidden=false;paper.scrollTop=0;}
   function chip(txt,fn,label){var b=el('button','chip',txt);b.type='button';if(label)b.setAttribute('aria-label',label);b.addEventListener('click',fn);return b;}
+  function ytInfo(u){
+    try{
+      var x=new URL(u),h=x.hostname.replace(/^www\./,''),id='',st=0,sh=false;
+      if(h==='youtu.be')id=x.pathname.slice(1);
+      else if(/youtube\.com$/.test(h)){
+        if(x.pathname.indexOf('/shorts/')===0){id=x.pathname.split('/')[2];sh=true;}
+        else id=x.searchParams.get('v')||'';
+      }
+      var t=x.searchParams.get('t')||x.searchParams.get('start')||'';
+      if(/^\d+$/.test(t))st=parseInt(t,10);
+      return /^[A-Za-z0-9_-]{6,}$/.test(id)?{id:id,start:st,short:sh}:null;
+    }catch(e){return null;}
+  }
+  function videoBox(v,w){
+    var b=el('button','vbox'+(v.short?' short':''));b.type='button';
+    b.setAttribute('aria-label',L('Play video','播放影片')+': '+WF(w,'title'));
+    b.appendChild(el('span','vplay'));
+    b.appendChild(el('span','vlab',L('Play video','播放影片')));
+    b.addEventListener('click',function(){
+      var f=document.createElement('iframe');
+      f.src='https://www.youtube-nocookie.com/embed/'+v.id+'?autoplay=1&rel=0&playsinline=1'+(v.start?'&start='+v.start:'');
+      f.title=WF(w,'title');f.allow='autoplay; encrypted-media; picture-in-picture; fullscreen';f.allowFullscreen=true;
+      f.referrerPolicy='strict-origin-when-cross-origin';
+      var d=el('div','vbox on'+(v.short?' short':''));d.appendChild(f);
+      b.replaceWith(d);track('play_video',{work:w.id});
+    });
+    return b;
+  }
   function showDetail(i){
     var w=works[i];curDetail=i;
     listView.hidden=true;detail.hidden=false;detail.innerHTML='';
@@ -774,6 +812,7 @@ html[lang="zh-Hant"] .big{letter-spacing:0;line-height:1.1}
     if(rows.length){var dl=el('dl','meta');rows.forEach(function(r){dl.appendChild(el('dt',null,r[0]));dl.appendChild(el('dd',null,r[1]));});txt.appendChild(dl);}
     var _story=WF(w,'story');if(_story&&_story.length){var st=el('div','dstory');_story.forEach(function(p){st.appendChild(el('p',null,p));});txt.appendChild(st);}
     var _hl=WF(w,'hl');if(_hl&&_hl.length){var ul=el('ul','dhl');_hl.forEach(function(t){ul.appendChild(el('li',null,t));});txt.appendChild(ul);}
+    if(w.yt){var _v=ytInfo(w.yt);if(_v)txt.appendChild(videoBox(_v,w));}
     var links=el('div','links');
     if(w.yt){var a=el('a','btn',L('▶ Watch on YouTube','▶ 在 YouTube 觀看'));a.href=w.yt;a.target='_blank';a.rel='noopener';links.appendChild(a);}
     (w.other||[]).forEach(function(o){var a=el('a','btn',(LANG==='zh'&&o[0]==='Watch on Instagram')?'在 Instagram 觀看':o[0]);a.href=o[1];a.target='_blank';a.rel='noopener';links.appendChild(a);});
