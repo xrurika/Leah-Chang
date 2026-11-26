@@ -29,7 +29,7 @@
 <script src="config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;900&family=Space+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
   --rope:#8F7B52; --ink:#14313B; --sea:#0F4C5C; --accent:#E8A33D; --paper:#F6F0E0;
@@ -389,7 +389,7 @@ body.playing #hud{display:flex}
  .hang.soon{cursor:default}
 .hang.soon:hover .obj,.hang.soon:focus-visible .obj{transform:rotate(var(--r,0deg))}
 .hang.soon .obj>img:first-child{filter:saturate(.75)}
-.tape{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%) rotate(-9deg);width:128%;padding:.45em 0;text-align:center;font:700 clamp(10px,1.05vw,13px)/1.1 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#4a3a1c;background:rgba(236,218,160,.74);border-top:1px dashed rgba(120,96,40,.35);border-bottom:1px dashed rgba(120,96,40,.35);box-shadow:0 1px 4px rgba(20,49,59,.25);pointer-events:none;-webkit-backdrop-filter:blur(1px);backdrop-filter:blur(1px)}
+.tape{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);width:max-content;max-width:none;padding:.45em 1.5em;white-space:nowrap;writing-mode:horizontal-tb;text-align:center;font:700 clamp(10px,1.05vw,13px)/1.2 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#4a3a1c;background:rgba(236,218,160,.78);border-top:1px dashed rgba(120,96,40,.35);border-bottom:1px dashed rgba(120,96,40,.35);box-shadow:0 1px 4px rgba(20,49,59,.25);pointer-events:none}
 .learned{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
 .learned span{font-size:12px;background:rgba(120,190,200,.25);border-radius:999px;padding:4px 10px}
 #murk{opacity:0}
@@ -422,6 +422,22 @@ body.playing .hpearl{display:block}
 .cert-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .cert-actions a.chip{text-decoration:none;display:inline-block}
 .cert-actions a[hidden]{display:none}
+
+#topbar{position:fixed;right:16px;top:14px;z-index:60;display:flex;align-items:center;gap:8px}
+#topbar #snd{position:static;width:36px;height:36px;padding:0;justify-content:center;gap:0;background:rgba(251,246,230,.9);color:var(--ink);border:1px solid var(--rope);box-shadow:0 2px 8px rgba(20,49,59,.18)}
+#topbar #snd:hover{transform:none;background:#fff}
+#topbar #snd[aria-pressed=false]{background:rgba(251,246,230,.9);color:#8a5a2b}
+#topbar #snd svg{width:18px;height:18px}
+#topbar #snd-t{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#lang{display:flex;height:36px;border:1px solid var(--rope);border-radius:999px;overflow:hidden;background:rgba(251,246,230,.9);box-shadow:0 2px 8px rgba(20,49,59,.18);font-family:var(--mono);font-weight:700;font-size:11px}
+#lang button{padding:0 12px;background:transparent;color:var(--ink);border:0;cursor:pointer;letter-spacing:.04em}
+#lang button:hover{background:rgba(20,49,59,.08)}
+#lang button.on{background:var(--ink);color:#FBF6E6}
+#lang button:focus-visible{outline:2px solid var(--sea);outline-offset:-3px}
+@media (max-width:720px){#topbar{right:10px;top:10px;gap:6px}#topbar #snd{width:32px;height:32px}#topbar #snd svg{width:16px;height:16px}#lang{height:32px;font-size:11px}#lang button{padding:0 10px}}
+html[lang="zh-Hant"]{--sans:'Noto Sans TC','PingFang TC','Microsoft JhengHei',system-ui,sans-serif;--mono:'Noto Sans TC','PingFang TC','Microsoft JhengHei',ui-monospace,monospace}
+#ct-form label{line-height:18px}
+html[lang="zh-Hant"] .big{letter-spacing:0;line-height:1.1}
 </style>
 </head>
 <body>
@@ -445,7 +461,7 @@ body.playing .hpearl{display:block}
 <div id="fact" role="status" aria-live="polite"><img class="fbg" alt="" draggable="false"><div class="ftx"><b></b><p></p></div><button class="fx" type="button" aria-label="Close">&times;</button></div>
 <div id="hud"><div class="chip">Ocean cleanup <span id="cl-n">0/8</span><i class="bar"><u id="cl-bar"></u></i></div><div class="chip">Pearls <span id="pl-n">0/6</span></div></div>
 
-<button id="snd" type="button" aria-pressed="true" aria-label="Sound on. Click to turn off."><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9H3z" fill="currentColor"/><g class="w" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></g><path class="x" d="M15 9l6 6M21 9l-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg><span id="snd-t">Sound on</span></button>
+<div id="topbar"><div id="lang" role="group" aria-label="Language"><button type="button" data-l="en" aria-pressed="true">EN</button><button type="button" data-l="zh" aria-pressed="false">中文</button></div><button id="snd" type="button" aria-pressed="true" aria-label="Sound on. Click to turn off."><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9H3z" fill="currentColor"/><g class="w" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></g><path class="x" d="M15 9l6 6M21 9l-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg><span id="snd-t">Sound on</span></button></div>
 <main class="app">
   <aside class="side">
     <h2>TIEN HSI CHANG (LEAH)<br>PORTFOLIO</h2>
@@ -669,15 +685,46 @@ body.playing .hpearl{display:block}
     },60);
   }
 
-  /*WORKS_DATA*/var works=[{"id": "W01", "year": "2026", "cat": "showcase", "title": "COP31, the 31st Conference of the Parties to the UN Framework Convention on Climate Change", "role": "Climate Solutions Showcase", "date": "Nov 16–19, 2026", "loc": "Antalya, Türkiye", "org": "UNFCCC, GSA", "story": ["Leah Chang is a mermaid performer from Taiwan. When she performs underwater, she sees plastic in the ocean with her own eyes. So she wears a mermaid tail made of recycled plastic bottle fabric when she performs. Through her actions, she shows that the ocean and the climate are closely connected, and that protecting the ocean can really happen in our daily lives."], "yt": "https://youtu.be/HttQQSaTwTA", "photos": []}, {"id": "W02", "year": "2026", "cat": "showcase", "title": "UN World Future Intelligence Forum (WFIF 2026)", "role": "Future 100 Voices", "date": "Nov 5, 2026", "loc": "United Nations Bangkok", "org": "ESGIN", "story": ["Leah transforms recycled plastic bottles into fabric and mermaid tails, combining circular design, underwater sport and ocean conservation. Through performances and international events, she invites people to act for a healthier ocean."], "yt": "https://youtu.be/wYt6aUWm2dU", "photos": []}, {"id": "W03", "year": "2026", "cat": "talk", "title": "Digital@UNGA 2026", "role": "Speaker · “Building a Transparent and Kind Digital World”", "date": "Sep 25, 2026", "org": "ITU, UNDP, ESGIN", "story": ["A space for people from different places to talk about how to make the digital world more inclusive and safer, and to make sure young people's voices are heard."], "yt": "https://youtu.be/mbGHyg3CIzk?t=4655", "photos": ["W03_01.jpg"], "captions": ["“Responsible Digital for Youth” session poster, Digital@UNGA affiliate event"]}, {"id": "W04", "year": "2026", "cat": "talk", "title": "UN 11th STI Forum – Official Side Event: Responsible Digital Governance", "role": "Contributor · youth proposal on digital safety and governance", "date": "May 6–7, 2026", "loc": "Online", "org": "ECOSOC, UN IATT, UN-DESA, UNCTAD, ESGIN", "story": ["My proposal is about the problems I see in the online world.", "The digital world is already part of everyone's life. We use phones, tablets and AI, and we talk with other people online. But I've also noticed that the internet isn't always safe or kind. Sometimes a single comment can make someone sad for a long time.", "So I started to wonder: if we use digital technology every day, can we work together to make it a more transparent and kinder place?", "When I wrote this proposal in May, I asked myself: if I speak up about what I see, will someone at Meta, an AI company, or another digital platform read it one day? I don't know the answer. But if we never share our ideas, no one will ever know what we're thinking. So I wanted to try."], "photos": []}, {"id": "W05", "year": "2026", "cat": "talk", "title": "Genfuture Intelligence Global Forum on sustainability education innovation", "role": "Youth representative speaker", "story": ["For a student, education shouldn't be just a stack of red marks on exam papers. What children really long for is this: when I walk into school, when I go online, can I be treated gently as an individual? Can I grow up safely in an environment without hostility?"], "yt": "https://youtube.com/shorts/LPLorn2lhT8", "photos": ["W05_01.jpg", "W05_02.jpg"], "captions": ["On stage at the GenFuture Intelligence Global Forum", "GenFuture Intelligence Global Forum speaker poster"]}, {"id": "W06", "year": "2025", "cat": "talk", "title": "UN Social Innovation Program “Leader for Young Leaders”", "role": "Youth host", "story": ["Luca Uguzzoni is an international sustainability strategist and Managing Director at Ambi Group. He has advised the International Olympic Committee (IOC) and supported global mega events, including the Winter Olympic Games, the Napoli Universiade, and projects across Europe, Africa, Central Asia, and Asia.", "His work focuses on sustainability strategy, urban transformation, social impact, and digital governance.", "In “Youth × Cities × Olympics”, Luca shares how mega events inspire youth leadership, drive city innovation, and strengthen global collaboration for a changing world."], "yt": "https://youtu.be/HQUsCDJgeAs", "photos": []}, {"id": "W07", "year": "2025", "cat": "perf", "title": "National Dream Cup Swimming Championships Winter Series 2025", "role": "Opening performance", "date": "Nov 29, 2025", "loc": "Taipei, Taiwan", "org": "Dream Academy of Sport", "yt": "https://youtu.be/kiBLmwcGYS0", "photos": ["W07_01.jpg"], "captions": ["National Dream Cup opening ceremony poster"]}, {"id": "W08", "year": "2025", "cat": "perf", "title": "International Mermaid & Aquatic Arts Championship", "role": "Competitor", "date": "May 17, 2025", "loc": "Hotel Borobudur Jakarta, Indonesia", "org": "Hotel Borobudur Jakarta, Meracle Academy, Mermaid Federation International", "hl": ["4th place"], "yt": "https://youtu.be/1d1A-r413vw", "photos": ["W08_01.jpg"], "captions": ["International Mermaid & Aquatic Arts Championship poster"]}, {"id": "W09", "year": "2025", "cat": "perf", "title": "Play Island Outdoor Life Expo", "role": "Mermaid performance", "date": "Sep 13–14, 2025", "loc": "Taipei, Taiwan", "org": "Breatru Co., Ltd.", "yt": "https://youtu.be/Mrt6gRAm_JM", "photos": []}, {"id": "W10", "year": "2024", "cat": "talk", "title": "TEDx Youth @Dalongdong", "role": "Speaker", "date": "Apr 20, 2024", "loc": "Taipei, Taiwan", "org": "TEDx Youth @Dalongdong", "story": ["Leah became a mermaid when she was 4, after her mom showed her a news story about a mermaid gathering. On the TEDx stage she shared how that dream led to a mermaid tail made for Asian body types and sewn from recycled materials, because traditional production can harm the ocean. She hopes the beauty of mermaids can inspire more people to protect it."], "hl": ["Talk: “Unlocking sustainable magic from the ocean”"], "yt": "https://youtu.be/RWWRecTG54w", "photos": []}, {"id": "W11", "year": "2024", "cat": "perf", "title": "ADEX Asia Dive Expo, Singapore", "role": "Mermaid performance", "date": "Apr 12–14, 2024", "loc": "Singapore", "org": "Underwater360", "hl": ["Marking ADEX's 30th anniversary, this edition's theme was “Sustainable Blue Economy.”"], "yt": "https://youtu.be/LApftq5TzXw", "photos": ["W11_01.jpg"], "captions": ["ADEX Ocean Festival 2024 official poster"]}, {"id": "W12", "year": "2023", "cat": "perf", "title": "mini PRC Floral Spring Cup", "role": "Closing performance", "date": "May 28, 2023", "loc": "Competition Pool, Taichung North District Civil Sports Center", "org": "Taiwan Freediving Development Association (TFDA), One Freediving, Ms.Ocean", "photos": []}, {"id": "W13", "year": "2022", "cat": "perf", "title": "National Museum of Marine Science and Technology: Ocean Ambassador", "role": "Ocean ambassador · plastic-reduction art performance", "date": "Sep 11, 2022", "loc": "Keelung, Taiwan", "org": "National Museum of Marine Science and Technology", "story": ["Mermaid performances can love the ocean and the Earth, too.", "Big and little mermaids tell the story of marine waste on stage, quietly planting the seeds of ocean conservation in children's hearts."], "other": [["Watch on Instagram", "https://www.instagram.com/tv/CiXnAdHhQ4L/"]], "photos": []}];/*END_WORKS_DATA*/
-  var CATS={perf:'Performance & Competition',talk:'Talks & Forums',showcase:'Showcase'};
+  /* ---------- language: EN / 中文 ---------- */
+  var LANG='en';
+  try{var _sl=localStorage.getItem('leah_lang');if(_sl==='zh'||_sl==='en')LANG=_sl;else if(/^zh/i.test(navigator.language||''))LANG='zh';}catch(e){}
+  function L(en,zh){return(LANG==='zh'&&zh!=null)?zh:en;}
+  function WF(w,k){return(LANG==='zh'&&w[k+'_zh']!=null)?w[k+'_zh']:w[k];}
+  var ZH={"TIEN HSI CHANG · OCEAN PORTFOLIO": "張恬熙 · 海洋作品集", "BEST WITH SOUND ON": "開啟聲音體驗更佳", "TIEN HSI CHANG (LEAH)": "張恬熙（恬恬）", "PORTFOLIO": "個人作品集", "WHERE THE OCEAN MEETS NEW VOICES.": "海洋與新世代聲音相遇的地方。", "MAP LEGEND": "地圖圖例", "01 Bottle": "01 瓶中信", "About": "關於我", "02 Folder": "02 資料夾", "Works": "經歷", "03 Tag": "03 吊牌", "Dive Certs": "潛水證照", "04 Shell": "04 貝殼", "Traits": "特質", "05 Envelope": "05 信封", "Contact": "聯絡", "06 Binoculars": "06 望遠鏡", "Updates": "動態", "07 Ticket": "07 票券", "Advocacy Game": "倡議遊戲", "OBJECT INTERFACE": "互動說明", "→ Hover for details": "→ 滑過可看提示", "→ Click to unfold": "→ 點擊展開", "OCEAN": "海洋", "STORIES &": "故事與", "YOUTH VOICE.": "青年之聲。", "Mermaid Performer": "人魚表演者", "Youth Ocean Sustainability Advocate": "青年海洋永續倡議者", "TEDx Youth Speaker": "TEDx Youth 講者", "01 About Me": "01 關於我", "Click to unfold": "點擊展開", "02 Selected Works": "02 精選經歷", "Click to open": "點擊打開", "03 Dive Licenses": "03 潛水證照", "04 Traits": "04 個人特質", "05 Contact": "05 聯絡我", "06 Updates": "06 最新動態", "07 Ocean Advocacy Game": "07 海洋倡議遊戲", "Coming soon": "即將推出", "01 / ABOUT ME": "01 / 關於我", "Hi, I'm Leah.": "嗨，我是恬恬。", "I've been in the water since I was six months old, and I've been swimming for 10 years.": "我從六個月大就開始玩水，游泳已經十年了。", "When I was 4, my mom showed me a news story about a mermaid gathering. I was hooked, and I became a mermaid too.": "4 歲那年，媽媽給我看了一則美人魚聚會的新聞，我一下子就著迷了，也成為一位美人魚。", "NOTE FROM THE BOTTLE": "瓶中信小紙條", "Pull another note ↻": "再抽一張 ↻", "02 / SELECTED WORKS": "02 / 精選經歷", "Stages & voices": "舞台與聲音", "List": "列表", "Map": "地圖", "Timeline": "時間軸", "All": "全部", "Performance & Competition": "表演與競賽", "Talks & Forums": "講者與論壇", "Showcase": "展演", "03 / DIVE LICENSES": "03 / 潛水證照", "Certified in the water": "水中的認證", "Issued Aug 2025": "2025 年 8 月核發", "Issued Aug 2022": "2022 年 8 月核發", "Issued Feb 2024": "2024 年 2 月核發", "04 / TRAITS": "04 / 個人特質", "Pearls from the shell": "貝殼裡的珍珠", "Social energy": "社交能量", "I get my energy from people and love joining events.": "我從與人互動中獲得能量，也喜歡參加活動。", "Open expression": "善於表達", "I'm good at putting my ideas and feelings into words.": "我擅長把想法和感受說出來。", "Storyteller": "愛說故事", "I love sharing my own story with others.": "我喜歡和別人分享自己的故事。", "Born in the water": "水裡長大", "In the water since I was six months old, swimming for 10 years.": "六個月大就開始親水，游泳資歷十年。", "05 / CONTACT": "05 / 聯絡", "Send a message": "留言給我", "For speaking, performance and collaboration invitations, please send a message below, or reach out by email or LinkedIn.": "如果有演講、表演或合作邀約，歡迎在下方留言，也可以用 Email 或 LinkedIn 聯絡我。", "Name *": "姓名 *", "Subject *": "主旨 *", "Message *": "訊息 *", "* All fields are required.": "* 所有欄位皆為必填。", "Send message": "送出訊息", "Brands I've worked with": "合作過的品牌", "06 / UPDATES": "06 / 最新動態", "What's new": "最新消息", "The three most recent entries, newest first.": "最近三筆經歷，由新到舊。", "See all selected works →": "查看全部精選經歷 →"};
+  var ZATTR={"Close": "關閉", "Change view": "切換檢視", "Filter works": "篩選經歷", "Places": "地點", "Language": "語言", "01 About me, open message bottle": "01 關於我，打開瓶中信", "02 Selected works, open folder": "02 精選經歷，打開資料夾", "03 Dive licenses, open tag": "03 潛水證照，打開吊牌", "04 Traits, open shell": "04 個人特質，打開貝殼", "05 Contact, open envelope": "05 聯絡我，打開信封", "06 Updates, open binoculars": "06 最新動態，打開望遠鏡", "07 Ocean advocacy game, coming soon": "07 海洋倡議遊戲，即將推出", "Dive deeper or surface": "下潛或浮上水面", "Portrait of Leah Chang": "張恬熙的肖像"};
+  var NOTES_ZH=["我從六個月大就開始玩水。", "4 歲那年，一則美人魚聚會的新聞改變了我的一切。", "表演時，我穿的人魚尾是用回收寶特瓶布料製成的。", "我曾在新加坡的亞洲潛水展 ADEX 擔任人魚表演。", "我參加了在雅加達舉辦的國際人魚與水中藝術錦標賽。", "2024 年，我在 TEDx Youth @大龍峒 分享「從海洋解鎖永續魔法」。", "我為聯合國第 11 屆 STI 論壇寫了一份青年提案，希望打造更安全、更友善的數位世界。", "我相信，如果我們都不分享想法，就沒有人會知道我們在想什麼。", "我主持過聯合國社會創新項目「Leader for Young Leaders」。", "我相信保護海洋可以從日常生活做起。"];
+  var I18N_SKIP='#works-list,#updates-list,#work-detail,#tl,#mapwrap,#placechips,#map-panel,#note-text,#snd,#lang,#gz,#gm,#divehint,#divebtn,#toast,#fact,#hud,#trashbox,#modal-game,#modal-pledge,#cert,#learned,#learned-head';
+  var _origT=new WeakMap(),_origA=new WeakMap();
+  function swapStatic(){
+    var tw=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,null),n,nodes=[];
+    while((n=tw.nextNode()))nodes.push(n);
+    nodes.forEach(function(n){
+      var pe=n.parentElement;if(!pe||/^(SCRIPT|STYLE|TEXTAREA|NOSCRIPT)$/.test(pe.nodeName)||pe.closest(I18N_SKIP))return;
+      var o=_origT.get(n);if(o===undefined){o=n.nodeValue;_origT.set(n,o);}
+      var t=o.trim(),z=t&&ZH[t];
+      n.nodeValue=(LANG==='zh'&&z)?o.replace(t,z):o;
+    });
+    document.querySelectorAll('[aria-label],img[alt]').forEach(function(e){
+      if(e.closest(I18N_SKIP))return;
+      ['aria-label','alt'].forEach(function(a){
+        if(!e.hasAttribute(a))return;
+        var m=_origA.get(e);if(!m){m={};_origA.set(e,m);}
+        if(m[a]===undefined)m[a]=e.getAttribute(a);
+        var z=ZATTR[m[a]];e.setAttribute(a,(LANG==='zh'&&z)?z:m[a]);
+      });
+    });
+  }
+  /*WORKS_DATA*/var works=[{"id": "W01", "year": "2026", "cat": "showcase", "title": "COP31, the 31st Conference of the Parties to the UN Framework Convention on Climate Change", "role": "Climate Solutions Showcase", "date": "Nov 16–19, 2026", "loc": "Antalya, Türkiye", "org": "UNFCCC, GSA", "story": ["Leah Chang is a mermaid performer from Taiwan. When she performs underwater, she sees plastic in the ocean with her own eyes. So she wears a mermaid tail made of recycled plastic bottle fabric when she performs. Through her actions, she shows that the ocean and the climate are closely connected, and that protecting the ocean can really happen in our daily lives."], "yt": "https://youtu.be/HttQQSaTwTA", "photos": [], "title_zh": "聯合國氣候變化綱要公約第 31 屆締約方大會（COP31）", "role_zh": "氣候解決方案展演", "date_zh": "2026 年 11 月 16–19 日", "loc_zh": "土耳其，安塔利亞", "org_zh": "UNFCCC、GSA", "story_zh": ["張恬熙（Leah Chang）是一位來自臺灣的美人魚表演者。她在水下表演時，親眼看見海裡的塑膠垃圾，所以表演時穿著用回收寶特瓶布料製成的人魚尾。她用行動說明海洋與氣候密切相關，而保護海洋可以從日常生活做起。"]}, {"id": "W02", "year": "2026", "cat": "showcase", "title": "UN World Future Intelligence Forum (WFIF 2026)", "role": "Future 100 Voices", "date": "Nov 5, 2026", "loc": "United Nations Bangkok", "org": "ESGIN", "story": ["Leah transforms recycled plastic bottles into fabric and mermaid tails, combining circular design, underwater sport and ocean conservation. Through performances and international events, she invites people to act for a healthier ocean."], "yt": "https://youtu.be/wYt6aUWm2dU", "photos": [], "title_zh": "聯合國世界未來智慧論壇（WFIF 2026）", "role_zh": "Future 100 Voices", "date_zh": "2026 年 11 月 5 日", "loc_zh": "曼谷聯合國會議中心", "org_zh": "ESGIN", "story_zh": ["恬恬把回收寶特瓶變成布料和人魚尾，結合循環設計、水下運動與海洋保育。她透過表演與國際活動，邀請大家一起為更健康的海洋行動。"]}, {"id": "W03", "year": "2026", "cat": "talk", "title": "Digital@UNGA 2026", "role": "Speaker · “Building a Transparent and Kind Digital World”", "date": "Sep 25, 2026", "org": "ITU, UNDP, ESGIN", "story": ["A space for people from different places to talk about how to make the digital world more inclusive and safer, and to make sure young people's voices are heard."], "yt": "https://youtu.be/mbGHyg3CIzk?t=4655", "photos": ["W03_01.jpg"], "captions": ["“Responsible Digital for Youth” session poster, Digital@UNGA affiliate event"], "title_zh": "Digital@UNGA 2026", "role_zh": "講者 · 「打造透明且友善的數位世界」", "date_zh": "2026 年 9 月 25 日", "org_zh": "ITU、UNDP、ESGIN", "story_zh": ["這是一個讓來自不同地方的人，一起討論如何讓數位世界更包容、更安全，並確保年輕人的聲音被聽見的場合。"], "captions_zh": ["「Responsible Digital for Youth」場次海報，Digital@UNGA 周邊活動"]}, {"id": "W04", "year": "2026", "cat": "talk", "title": "UN 11th STI Forum – Official Side Event: Responsible Digital Governance", "role": "Contributor · youth proposal on digital safety and governance", "date": "May 6–7, 2026", "loc": "Online", "org": "ECOSOC, UN IATT, UN-DESA, UNCTAD, ESGIN", "story": ["My proposal is about the problems I see in the online world.", "The digital world is already part of everyone's life. We use phones, tablets and AI, and we talk with other people online. But I've also noticed that the internet isn't always safe or kind. Sometimes a single comment can make someone sad for a long time.", "So I started to wonder: if we use digital technology every day, can we work together to make it a more transparent and kinder place?", "When I wrote this proposal in May, I asked myself: if I speak up about what I see, will someone at Meta, an AI company, or another digital platform read it one day? I don't know the answer. But if we never share our ideas, no one will ever know what we're thinking. So I wanted to try."], "photos": [], "title_zh": "聯合國第 11 屆 STI 論壇官方周邊活動：負責任的數位治理", "role_zh": "貢獻者 · 數位安全與治理青年提案", "date_zh": "2026 年 5 月 6–7 日", "loc_zh": "線上", "story_zh": ["我的提案是關於我在網路世界看到的問題。", "數位世界已經是每個人生活的一部分：我們用手機、平板和 AI，也在網路上和別人交談。但我也發現，網路並不總是安全或友善的，有時一句留言就可能讓人難過很久。", "所以我開始想：既然我們每天都在使用數位科技，能不能一起讓它變得更透明、更友善？", "我在 5 月寫這份提案時問自己：如果我把看到的說出來，有一天會不會有 Meta、AI 公司或其他數位平台的人讀到？我不知道答案。但如果我們都不分享想法，就沒有人會知道我們在想什麼，所以我想試試看。"]}, {"id": "W05", "year": "2026", "cat": "talk", "title": "Genfuture Intelligence Global Forum on sustainability education innovation", "role": "Youth representative speaker", "story": ["For a student, education shouldn't be just a stack of red marks on exam papers. What children really long for is this: when I walk into school, when I go online, can I be treated gently as an individual? Can I grow up safely in an environment without hostility?"], "yt": "https://youtube.com/shorts/LPLorn2lhT8", "photos": ["W05_01.jpg", "W05_02.jpg"], "captions": ["On stage at the GenFuture Intelligence Global Forum", "GenFuture Intelligence Global Forum speaker poster"], "title_zh": "GenFuture Intelligence 全球永續教育創新論壇", "role_zh": "青年代表講者", "story_zh": ["對學生來說，教育不該只是考卷上一堆紅色的分數。孩子真正渴望的是：當我走進學校、當我上網的時候，能不能被當作一個獨立的人溫柔對待？能不能在沒有敵意的環境中安心長大？"], "captions_zh": ["在 GenFuture Intelligence 全球永續教育創新論壇的舞台上", "GenFuture Intelligence 全球永續教育創新論壇講者海報"]}, {"id": "W06", "year": "2025", "cat": "talk", "title": "UN Social Innovation Program “Leader for Young Leaders”", "role": "Youth host", "story": ["Luca Uguzzoni is an international sustainability strategist and Managing Director at Ambi Group. He has advised the International Olympic Committee (IOC) and supported global mega events, including the Winter Olympic Games, the Napoli Universiade, and projects across Europe, Africa, Central Asia, and Asia.", "His work focuses on sustainability strategy, urban transformation, social impact, and digital governance.", "In “Youth × Cities × Olympics”, Luca shares how mega events inspire youth leadership, drive city innovation, and strengthen global collaboration for a changing world."], "yt": "https://youtu.be/HQUsCDJgeAs", "photos": [], "title_zh": "聯合國社會創新項目「Leader for Young Leaders」", "role_zh": "青年主持人", "story_zh": ["單集來賓 Luca Uguzzoni 是國際永續策略專家，也是 Ambi Group 的董事總經理。他曾擔任國際奧林匹克委員會（IOC）的顧問，並協助多項全球大型賽事，包括冬季奧運、拿坡里世界大學運動會，以及歐洲、非洲、中亞與亞洲的計畫。", "他的工作聚焦於永續策略、城市轉型、社會影響與數位治理。", "在「Youth × Cities × Olympics」這集中，Luca 分享大型賽事如何啟發青年領導力、推動城市創新，並強化全球合作。"]}, {"id": "W07", "year": "2025", "cat": "perf", "title": "National Dream Cup Swimming Championships Winter Series 2025", "role": "Opening performance", "date": "Nov 29, 2025", "loc": "Taipei, Taiwan", "org": "Dream Academy of Sport", "yt": "https://youtu.be/kiBLmwcGYS0", "photos": ["W07_01.jpg"], "captions": ["National Dream Cup opening ceremony poster"], "title_zh": "2025 全國夢想盃游泳錦標賽冬季賽", "role_zh": "開幕表演", "date_zh": "2025 年 11 月 29 日", "loc_zh": "台北，臺灣", "org_zh": "夢想體育學院", "captions_zh": ["全國夢想盃開幕表演海報"]}, {"id": "W08", "year": "2025", "cat": "perf", "title": "International Mermaid & Aquatic Arts Championship", "role": "Competitor", "date": "May 17, 2025", "loc": "Hotel Borobudur Jakarta, Indonesia", "org": "Hotel Borobudur Jakarta, Meracle Academy, Mermaid Federation International", "hl": ["4th place"], "yt": "https://youtu.be/1d1A-r413vw", "photos": ["W08_01.jpg"], "captions": ["International Mermaid & Aquatic Arts Championship poster"], "title_zh": "國際人魚與水中藝術錦標賽", "role_zh": "參賽者", "date_zh": "2025 年 5 月 17 日", "loc_zh": "印尼，雅加達 Borobudur 飯店", "hl_zh": ["第四名"], "captions_zh": ["國際人魚與水中藝術錦標賽海報"]}, {"id": "W09", "year": "2025", "cat": "perf", "title": "Play Island Outdoor Life Expo", "role": "Mermaid performance", "date": "Sep 13–14, 2025", "loc": "Taipei, Taiwan", "org": "Breatru Co., Ltd.", "yt": "https://youtu.be/Mrt6gRAm_JM", "photos": [], "title_zh": "玩野戶外生活博覽會", "role_zh": "人魚表演", "date_zh": "2025 年 9 月 13–14 日", "loc_zh": "台北，臺灣"}, {"id": "W10", "year": "2024", "cat": "talk", "title": "TEDx Youth @Dalongdong", "role": "Speaker", "date": "Apr 20, 2024", "loc": "Taipei, Taiwan", "org": "TEDx Youth @Dalongdong", "story": ["Leah became a mermaid when she was 4, after her mom showed her a news story about a mermaid gathering. On the TEDx stage she shared how that dream led to a mermaid tail made for Asian body types and sewn from recycled materials, because traditional production can harm the ocean. She hopes the beauty of mermaids can inspire more people to protect it."], "hl": ["Talk: “Unlocking sustainable magic from the ocean”"], "yt": "https://youtu.be/RWWRecTG54w", "photos": [], "title_zh": "TEDx Youth @大龍峒", "role_zh": "講者", "date_zh": "2024 年 4 月 20 日", "loc_zh": "台北，臺灣", "org_zh": "TEDx Youth @大龍峒", "hl_zh": ["講題：「從海洋解鎖永續魔法」"], "story_zh": ["恬恬 4 歲時，因為媽媽分享了一則美人魚聚會的新聞而成為美人魚。她在 TEDx 舞台上分享這個夢想如何促成一條適合亞洲體型、以再生材料製作的人魚尾，因為傳統的製作方式可能傷害海洋。她希望藉由美人魚的美，啟發更多人一起保護海洋。"]}, {"id": "W11", "year": "2024", "cat": "perf", "title": "ADEX Asia Dive Expo, Singapore", "role": "Mermaid performance", "date": "Apr 12–14, 2024", "loc": "Singapore", "org": "Underwater360", "hl": ["Marking ADEX's 30th anniversary, this edition's theme was “Sustainable Blue Economy.”"], "yt": "https://youtu.be/LApftq5TzXw", "photos": ["W11_01.jpg"], "captions": ["ADEX Ocean Festival 2024 official poster"], "title_zh": "亞洲潛水展 ADEX 新加坡", "role_zh": "人魚表演", "date_zh": "2024 年 4 月 12–14 日", "loc_zh": "新加坡", "hl_zh": ["適逢 ADEX 30 週年，本屆主題為「永續藍色經濟」。"], "captions_zh": ["ADEX 海洋節 2024 官方海報"]}, {"id": "W12", "year": "2023", "cat": "perf", "title": "mini PRC Floral Spring Cup", "role": "Closing performance", "date": "May 28, 2023", "loc": "Competition Pool, Taichung North District Civil Sports Center", "org": "Taiwan Freediving Development Association (TFDA), One Freediving, Ms.Ocean", "photos": [], "title_zh": "mini PRC 花春盃", "role_zh": "閉幕表演", "date_zh": "2023 年 5 月 28 日", "loc_zh": "台中北區市民運動中心競技池"}, {"id": "W13", "year": "2022", "cat": "perf", "title": "National Museum of Marine Science and Technology: Ocean Ambassador", "role": "Ocean ambassador · plastic-reduction art performance", "date": "Sep 11, 2022", "loc": "Keelung, Taiwan", "org": "National Museum of Marine Science and Technology", "story": ["Mermaid performances can love the ocean and the Earth, too.", "Big and little mermaids tell the story of marine waste on stage, quietly planting the seeds of ocean conservation in children's hearts."], "other": [["Watch on Instagram", "https://www.instagram.com/tv/CiXnAdHhQ4L/"]], "photos": [], "title_zh": "國立海洋科技博物館：海洋大使", "role_zh": "海洋大使．減塑藝術展演", "date_zh": "2022 年 9 月 11 日", "loc_zh": "基隆，臺灣", "org_zh": "國立海洋科技博物館", "story_zh": ["美人魚的表演，也可以愛海洋、愛地球。", "大小美人魚在舞台上講述海洋廢棄物的故事，悄悄在孩子心裡種下海洋保育的種子。"]}];/*END_WORKS_DATA*/
+  var CATS_EN={perf:'Performance & Competition',talk:'Talks & Forums',showcase:'Showcase'},CATS_ZH={perf:'表演與競賽',talk:'講者與論壇',showcase:'展演'};
+  function catName(k){return L(CATS_EN[k],CATS_ZH[k]);}
+  var curDetail=-1,selectedPlace=null;
   var list=document.getElementById('works-list'),detail=document.getElementById('work-detail'),listView=document.getElementById('works-list-view'),paper=document.getElementById('works-paper');
   var filter='all';
   function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
   function rowFor(w,onClick){
     var li=document.createElement('li'),b=el('button','row');b.type='button';
     b.appendChild(el('span','yr',w.year));
-    var t=el('span','rt');t.appendChild(el('span','ttl',w.title));if(w.role)t.appendChild(el('span','rl',w.role));
+    var t=el('span','rt');t.appendChild(el('span','ttl',WF(w,'title')));if(WF(w,'role'))t.appendChild(el('span','rl',WF(w,'role')));
     b.appendChild(t);b.appendChild(el('span','go','→'));
     b.addEventListener('click',onClick);li.appendChild(b);return li;
   }
@@ -688,20 +735,20 @@ body.playing .hpearl{display:block}
       list.appendChild(rowFor(w,function(){showDetail(i);}));
     });
   }
-  function showList(){paper.classList.remove('has-photos');detail.hidden=true;listView.hidden=false;paper.scrollTop=0;}
+  function showList(){curDetail=-1;paper.classList.remove('has-photos');detail.hidden=true;listView.hidden=false;paper.scrollTop=0;}
   function chip(txt,fn,label){var b=el('button','chip',txt);b.type='button';if(label)b.setAttribute('aria-label',label);b.addEventListener('click',fn);return b;}
   function showDetail(i){
-    var w=works[i];
+    var w=works[i];curDetail=i;
     listView.hidden=true;detail.hidden=false;detail.innerHTML='';
     var nav=el('div','dnav');
-    nav.appendChild(chip('← All works',showList));
+    nav.appendChild(chip(L('← All works','← 全部經歷'),showList));
     nav.appendChild(el('span','sp'));
-    if(i>0)nav.appendChild(chip('‹ Newer',function(){showDetail(i-1);},'Newer work'));
-    if(i<works.length-1)nav.appendChild(chip('Older ›',function(){showDetail(i+1);},'Older work'));
+    if(i>0)nav.appendChild(chip(L('‹ Newer','‹ 較新'),function(){showDetail(i-1);},L('Newer work','較新的經歷')));
+    if(i<works.length-1)nav.appendChild(chip(L('Older ›','較舊 ›'),function(){showDetail(i+1);},L('Older work','較舊的經歷')));
     detail.appendChild(nav);
-    detail.appendChild(el('div','k',w.year+' / '+CATS[w.cat].toUpperCase()));
-    var h=el('h2','dtitle',w.title);h.tabIndex=-1;detail.appendChild(h);
-    if(w.role)detail.appendChild(el('div','drole',w.role));
+    detail.appendChild(el('div','k',w.year+' / '+catName(w.cat).toUpperCase()));
+    var h=el('h2','dtitle',WF(w,'title'));h.tabIndex=-1;detail.appendChild(h);
+    if(WF(w,'role'))detail.appendChild(el('div','drole',WF(w,'role')));
     var hasP=!!(w.photos&&w.photos.length);
     paper.classList.toggle('has-photos',hasP);
     var body=el('div','dbody'+(hasP?' two':'')),txt=el('div','dtext');
@@ -710,26 +757,26 @@ body.playing .hpearl{display:block}
       var ph=el('div','dphotos'),g=el('div','gallery');
       w.photos.forEach(function(src,k){
         var f=document.createElement('figure'),im=document.createElement('img');
-        im.src=src;im.alt=(w.captions&&w.captions[k])||(w.title+' photo '+(k+1));im.loading='lazy';
-        f.appendChild(im);if(w.captions&&w.captions[k])f.appendChild(el('figcaption',null,w.captions[k]));
+        im.src=src;var cap=(WF(w,'captions')||[])[k];im.alt=cap||(WF(w,'title')+' '+(k+1));im.loading='lazy';
+        f.appendChild(im);if(cap)f.appendChild(el('figcaption',null,cap));
         g.appendChild(f);
       });
       ph.appendChild(g);
       if(w.photos.length>1){
         var gn=el('div','gnav');
-        gn.appendChild(chip('‹',function(){g.scrollBy({left:-g.clientWidth,behavior:'smooth'});},'Previous photo'));
-        gn.appendChild(chip('›',function(){g.scrollBy({left:g.clientWidth,behavior:'smooth'});},'Next photo'));
+        gn.appendChild(chip('‹',function(){g.scrollBy({left:-g.clientWidth,behavior:'smooth'});},L('Previous photo','上一張'))); 
+        gn.appendChild(chip('›',function(){g.scrollBy({left:g.clientWidth,behavior:'smooth'});},L('Next photo','下一張'))); 
         ph.appendChild(gn);
       }
       body.appendChild(ph);
     }
-    var rows=[['Date',w.date],['Location',w.loc],['Organizer',w.org]].filter(function(r){return r[1];});
+    var rows=[[L('Date','日期'),WF(w,'date')],[L('Location','地點'),WF(w,'loc')],[L('Organizer','主辦單位'),WF(w,'org')]].filter(function(r){return r[1];});
     if(rows.length){var dl=el('dl','meta');rows.forEach(function(r){dl.appendChild(el('dt',null,r[0]));dl.appendChild(el('dd',null,r[1]));});txt.appendChild(dl);}
-    if(w.story&&w.story.length){var st=el('div','dstory');w.story.forEach(function(p){st.appendChild(el('p',null,p));});txt.appendChild(st);}
-    if(w.hl&&w.hl.length){var ul=el('ul','dhl');w.hl.forEach(function(t){ul.appendChild(el('li',null,t));});txt.appendChild(ul);}
+    var _story=WF(w,'story');if(_story&&_story.length){var st=el('div','dstory');_story.forEach(function(p){st.appendChild(el('p',null,p));});txt.appendChild(st);}
+    var _hl=WF(w,'hl');if(_hl&&_hl.length){var ul=el('ul','dhl');_hl.forEach(function(t){ul.appendChild(el('li',null,t));});txt.appendChild(ul);}
     var links=el('div','links');
-    if(w.yt){var a=el('a','btn','▶ Watch on YouTube');a.href=w.yt;a.target='_blank';a.rel='noopener';links.appendChild(a);}
-    (w.other||[]).forEach(function(o){var a=el('a','btn',o[0]);a.href=o[1];a.target='_blank';a.rel='noopener';links.appendChild(a);});
+    if(w.yt){var a=el('a','btn',L('▶ Watch on YouTube','▶ 在 YouTube 觀看'));a.href=w.yt;a.target='_blank';a.rel='noopener';links.appendChild(a);}
+    (w.other||[]).forEach(function(o){var a=el('a','btn',(LANG==='zh'&&o[0]==='Watch on Instagram')?'在 Instagram 觀看':o[0]);a.href=o[1];a.target='_blank';a.rel='noopener';links.appendChild(a);});
     if(links.childNodes.length)txt.appendChild(links);
     detail.appendChild(body);
     paper.scrollTop=0;
@@ -743,9 +790,13 @@ body.playing .hpearl{display:block}
   });
 
   var up=document.getElementById('updates-list');
-  works.slice(0,3).forEach(function(w,i){
-    up.appendChild(rowFor(w,function(){var o=opener;closeM();openM('modal-works',o);showDetail(i);}));
-  });
+  function renderUpdates(){
+    up.innerHTML='';
+    works.slice(0,3).forEach(function(w,i){
+      up.appendChild(rowFor(w,function(){var o=opener;closeM();openM('modal-works',o);showDetail(i);}));
+    });
+  }
+  renderUpdates();
 
   var current=null,opener=null;
   function openM(id,btn){track('open_section',{section:id.replace('modal-','')});current=document.getElementById(id);opener=btn;if(id==='modal-works')showList();if(id==='modal-about')newNote();current.classList.add('open');var x=current.querySelector('[data-close]');if(x)x.focus();}
@@ -822,11 +873,14 @@ body.playing .hpearl{display:block}
   ['pointerdown','keydown','touchend'].forEach(function(ev){document.addEventListener(ev,unlock,{passive:true});});
   var sndBtn=document.getElementById('snd');
   setTimeout(function(){sndBtn.classList.add('nudge');},1500);
+  function refreshSound(){
+    document.getElementById('snd-t').textContent=soundOn?L('Sound on','聲音開啟'):L('Sound off','聲音關閉');
+    sndBtn.setAttribute('aria-label',soundOn?L('Sound on. Click to turn off.','聲音開啟，點擊可關閉'):L('Sound off. Click to turn on.','聲音關閉，點擊可開啟'));
+  }
   sndBtn.addEventListener('click',function(){
     soundOn=!soundOn;
     sndBtn.setAttribute('aria-pressed',soundOn?'true':'false');
-    document.getElementById('snd-t').textContent=soundOn?'Sound on':'Sound off';
-    sndBtn.setAttribute('aria-label',soundOn?'Sound on. Click to turn off.':'Sound off. Click to turn on.');
+    refreshSound();
     sndBtn.classList.remove('nudge');
     if(mg){mg.gain.cancelScheduledValues(AC.currentTime);mg.gain.setTargetAtTime(soundOn?1:0,AC.currentTime,0.05);}
     if(amb&&amb.el){if(soundOn)amb.el.play();else amb.el.pause();}
@@ -881,7 +935,7 @@ body.playing .hpearl{display:block}
   var noteIdx=-1,noteEl=document.getElementById('note-text');
   function newNote(){
     var i;do{i=Math.floor(Math.random()*NOTES.length);}while(i===noteIdx&&NOTES.length>1);
-    noteIdx=i;noteEl.textContent=NOTES[i];
+    noteIdx=i;noteEl.textContent=L(NOTES[i],NOTES_ZH[i]);
   }
   document.getElementById('note-next').addEventListener('click',function(){newNote();sfx('paper');});
 
@@ -917,20 +971,22 @@ body.playing .hpearl{display:block}
     [[-24,64],[-14,64],[-14,66],[-22,66],[-24,64]]
   ];
   var PLACES={
-    taiwan:{name:'Taiwan',ll:[121,24],ids:['W05','W07','W09','W10','W12','W13']},
-    singapore:{name:'Singapore',ll:[103.8,1.35],ids:['W11']},
-    jakarta:{name:'Jakarta',ll:[106.8,-6.2],ids:['W08']},
-    bangkok:{name:'Bangkok',ll:[100.5,13.75],ids:['W02']},
-    antalya:{name:'Antalya',ll:[30.7,36.9],ids:['W01']},
-    online:{name:'Online & other',ll:null,ids:['W03','W04','W06']}
+    taiwan:{name:'Taiwan',zh:'台灣',ll:[121,24],ids:['W05','W07','W09','W10','W12','W13']},
+    singapore:{name:'Singapore',zh:'新加坡',ll:[103.8,1.35],ids:['W11']},
+    jakarta:{name:'Jakarta',zh:'雅加達',ll:[106.8,-6.2],ids:['W08']},
+    bangkok:{name:'Bangkok',zh:'曼谷',ll:[100.5,13.75],ids:['W02']},
+    antalya:{name:'Antalya',zh:'安塔利亞',ll:[30.7,36.9],ids:['W01']},
+    online:{name:'Online & other',zh:'線上與其他',ll:null,ids:['W03','W04','W06']}
   };
+  function pname(pl){return L(pl.name,pl.zh);}
+  function pcount(n){return LANG==='zh'?n+' 件':n+(n===1?' work':' works');}
   function px(ll){return [ll[0]+180,84-ll[1]];}
   function svgEl(t,a){var e=document.createElementNS('http://www.w3.org/2000/svg',t);for(var k in a)e.setAttribute(k,a[k]);return e;}
   function workIndex(id){for(var i=0;i<works.length;i++)if(works[i].id===id)return i;return -1;}
   function selectPlace(key){
-    var pl=PLACES[key],panel=document.getElementById('map-panel');
+    selectedPlace=key;var pl=PLACES[key],panel=document.getElementById('map-panel');
     panel.innerHTML='';
-    panel.appendChild(el('div','ph',pl.name+' · '+pl.ids.length+(pl.ids.length===1?' work':' works')));
+    panel.appendChild(el('div','ph',pname(pl)+' · '+pcount(pl.ids.length)));
     var ul=el('ul','works');
     pl.ids.forEach(function(id){var i=workIndex(id);if(i>-1)ul.appendChild(rowFor(works[i],function(){showDetail(i);}));});
     panel.appendChild(ul);
@@ -939,7 +995,7 @@ body.playing .hpearl{display:block}
   }
   function buildMap(){
     mapBuilt=true;
-    var svg=svgEl('svg',{viewBox:'0 0 360 150',role:'img','aria-label':'World map of selected works'});
+    var svg=svgEl('svg',{viewBox:'0 0 360 150',role:'img','aria-label':L('World map of selected works','精選經歷世界地圖')});
     svg.appendChild(svgEl('rect',{x:0,y:0,width:360,height:150,fill:'#CFE3E0'}));
     for(var lo=-150;lo<=180;lo+=30)svg.appendChild(svgEl('line',{x1:lo+180,y1:0,x2:lo+180,y2:150,'class':'grat'}));
     for(var la=60;la>=-60;la-=30)svg.appendChild(svgEl('line',{x1:0,y1:84-la,x2:360,y2:84-la,'class':'grat'}));
@@ -953,13 +1009,13 @@ body.playing .hpearl{display:block}
     });
     Object.keys(PLACES).forEach(function(k){
       var pl=PLACES[k];if(!pl.ll)return;
-      var q=px(pl.ll),g=svgEl('g',{'class':'pin',tabindex:'0',role:'button','data-k':k,'aria-label':pl.name+', '+pl.ids.length+' works'});
+      var q=px(pl.ll),g=svgEl('g',{'class':'pin',tabindex:'0',role:'button','data-k':k,'aria-label':pname(pl)+', '+pcount(pl.ids.length)});
       var r=2.6+Math.min(pl.ids.length,6)*0.35;
       g.appendChild(svgEl('circle',{cx:q[0],cy:q[1],r:r+4,fill:'rgba(0,0,0,0)'}));
       g.appendChild(svgEl('circle',{'class':'ring',cx:q[0],cy:q[1],r:r}));
       g.appendChild(svgEl('circle',{'class':'dot',cx:q[0],cy:q[1],r:r}));
       var t=svgEl('text',{x:q[0]+(k==='antalya'?-r-1.5:r+2),y:q[1]+1.8,'text-anchor':k==='antalya'?'end':'start'});
-      t.textContent=pl.name+(pl.ids.length>1?' · '+pl.ids.length:'');g.appendChild(t);
+      t.textContent=pname(pl)+(pl.ids.length>1?' · '+pl.ids.length:'');g.appendChild(t);
       g.addEventListener('click',function(){selectPlace(k);});
       g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();selectPlace(k);}});
       svg.appendChild(g);
@@ -967,7 +1023,7 @@ body.playing .hpearl{display:block}
     document.getElementById('mapwrap').appendChild(svg);
     var pc=document.getElementById('placechips');
     Object.keys(PLACES).forEach(function(k){
-      var b=el('button','chip',(k==='online'?'🌐 ':'')+PLACES[k].name+' ('+PLACES[k].ids.length+')');b.type='button';
+      var b=el('button','chip',(k==='online'?'🌐 ':'')+pname(PLACES[k])+' ('+PLACES[k].ids.length+')');b.type='button';
       b.addEventListener('click',function(){selectPlace(k);});pc.appendChild(b);
     });
   }
@@ -985,8 +1041,8 @@ body.playing .hpearl{display:block}
         var w=works[i];
         if(w.year!==last){tlEl.appendChild(el('div','tl-year',w.year));last=w.year;}
         var b=el('button','tl-item');b.type='button';
-        b.appendChild(el('span','ttl',w.title));
-        if(w.role)b.appendChild(el('span','rl',w.role));
+        b.appendChild(el('span','ttl',WF(w,'title')));
+        if(WF(w,'role'))b.appendChild(el('span','rl',WF(w,'role')));
         b.addEventListener('click',function(){showDetail(i);});
         tlEl.appendChild(b);
       })(i);
@@ -1042,9 +1098,9 @@ body.playing .hpearl{display:block}
     dcur+=(depth-dcur)*0.07;if(Math.abs(depth-dcur)<0.0005)dcur=depth;
     deepEl.style.opacity=(dcur*0.78).toFixed(3);
     gDot.style.top=(dcur*100)+'%';
-    var m=Math.round(dcur*30);if(m!==lastM){lastM=m;gM.textContent=m+' m';gZ.textContent=dcur<0.33?'Shallows':(dcur<0.75?'Open water':'Deep blue');}
+    var m=Math.round(dcur*30);if(m!==lastM){lastM=m;gM.textContent=m+' m';gZ.textContent=dcur<0.33?L('Shallows','淺水區'):(dcur<0.75?L('Open water','開闊海域'):L('Deep blue','深藍'));}
     envBtn.classList.toggle('glow',dcur>0.7);document.body.classList.toggle('dive',dcur>0.5);
-    var hintTxt=(dcur<0.04&&!usedLever)?'Tap DIVE or drag the depth lever →':(dcur>0.9?(game.on?'Glowing pearls hide down here — find them!':'Move your torch to explore · something is glowing…'):'');
+    var hintTxt=(dcur<0.04&&!usedLever)?L('Tap DIVE or drag the depth lever →','點「下潛」或拖曳深度桿 →'):(dcur>0.9?(game.on?L('Glowing pearls hide down here — find them!','發光的珍珠藏在這裡，快找找看！'):L('Move your torch to explore · something is glowing…','移動手電筒探索 · 好像有東西在發光…')):'');
     if(hintTxt!==lastHint){lastHint=hintTxt;hintEl.textContent=hintTxt;hintEl.style.opacity=hintTxt?1:0;}
     v3Frame(t,dt);
     if(amb&&AC){amb.f.frequency.value=(700+(1-dcur)*7800)*(1-0.9*muf);}
@@ -1302,18 +1358,18 @@ body.playing .hpearl{display:block}
     f.addEventListener('submit',function(e){
       e.preventDefault();
       var d={name:f.name.value.trim(),email:f.email.value.trim(),subject:f.subject.value.trim(),message:f.message.value.trim(),website:f.website.value};
-      if(!d.name||!d.email||!d.subject||!d.message){say('Please fill in every field.','err');return;}
-      if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email)){say('Please enter a valid email address.','err');return;}
-      if(d.website){say('Message sent. Thank you!','ok');f.reset();return;}
-      if(Date.now()-last<20000){say('Please wait a moment before sending again.','err');return;}
+      if(!d.name||!d.email||!d.subject||!d.message){say(L('Please fill in every field.','請填寫所有欄位。'),'err');return;}
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email)){say(L('Please enter a valid email address.','請輸入有效的 Email。'),'err');return;}
+      if(d.website){say(L('Message sent. Thank you!','訊息已送出，謝謝你！'),'ok');f.reset();return;}
+      if(Date.now()-last<20000){say(L('Please wait a moment before sending again.','請稍候再送出。'),'err');return;}
       if(!CONTACT_URL){
         location.href='mailto:murtail.lab@gmail.com?subject='+encodeURIComponent(d.subject)+'&body='+encodeURIComponent(d.message+'\n\n— '+d.name+' ('+d.email+')');
-        say('Opening your email app\u2026','ok');return;
+        say(L('Opening your email app\u2026','正在開啟你的郵件程式\u2026'),'ok');return;
       }
-      btn.disabled=true;say('Sending\u2026');
+      btn.disabled=true;say(L('Sending\u2026','送出中\u2026'));
       fetch(CONTACT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({name:d.name,email:d.email,subject:d.subject,message:d.message,page:location.href})})
-        .then(function(){last=Date.now();track('contact_submit');say('Message sent. Thank you!','ok');f.reset();})
-        .catch(function(){say('Could not send. Please email murtail.lab@gmail.com instead.','err');})
+        .then(function(){last=Date.now();track('contact_submit');say(L('Message sent. Thank you!','訊息已送出，謝謝你！'),'ok');f.reset();})
+        .catch(function(){say(L('Could not send. Please email murtail.lab@gmail.com instead.','無法送出，請改用 Email：murtail.lab@gmail.com'),'err');})
         .then(function(){btn.disabled=false;});
     });
   })();
@@ -1432,7 +1488,7 @@ body.playing .hpearl{display:block}
     murkV+=((game.on?(1-cleanSm):0)-murkV)*0.05;
     murkEl.style.opacity=murkV.toFixed(3);
     var mm=Math.round(dcur*30);if(mm!==lastAria){lastAria=mm;glineEl.setAttribute('aria-valuenow',mm);}
-    var bt=dcur>0.5?'SURFACE ↑':'DIVE ↓';if(bt!==lastBtn){lastBtn=bt;diveBtn.textContent=bt;}
+    var bt=dcur>0.5?L('SURFACE ↑','浮上 ↑'):L('DIVE ↓','下潛 ↓');if(bt!==lastBtn){lastBtn=bt;diveBtn.textContent=bt;}
     if(game.on&&spawned<TRASH_N&&t>nextTrash&&!document.hidden&&!factEl.classList.contains('on')&&trashBox.children.length<5){spawnTrash();nextTrash=t+1400+Math.random()*1600;}
   }
 
@@ -1454,6 +1510,34 @@ body.playing .hpearl{display:block}
   })();
   updHud();
 
+
+  /* ---------- apply language ---------- */
+  function applyLang(){
+    document.documentElement.lang=(LANG==='zh')?'zh-Hant':'en';
+    document.title=(LANG==='zh')?'張恬熙 Leah Chang | 海洋作品集':'Leah Chang | Ocean Portfolio';
+    swapStatic();refreshSound();
+    lastM=-1;lastHint=null;lastBtn='';
+    document.querySelectorAll('#lang button').forEach(function(b){var on=b.getAttribute('data-l')===LANG;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false');});
+    renderList();renderUpdates();
+    if(noteIdx>=0)noteEl.textContent=L(NOTES[noteIdx],NOTES_ZH[noteIdx]);
+    if(mapBuilt){
+      document.getElementById('mapwrap').innerHTML='';document.getElementById('placechips').innerHTML='';mapBuilt=false;
+      if(!vMap.hidden){buildMap();}
+    }
+    var panel=document.getElementById('map-panel');
+    if(selectedPlace&&PLACES[selectedPlace]){selectPlace(selectedPlace);}
+    else{panel.innerHTML='';panel.appendChild(el('div','ph',L('Pick a pin to see what happened there.','點選地圖上的標記，看看那裡發生了什麼。')));}
+    if(tlBuilt){tlBuilt=false;if(!vTime.hidden){buildTimeline();updateMer();revealTl();}}
+    if(curDetail>-1&&!detail.hidden){var st=paper.scrollTop;showDetail(curDetail);paper.scrollTop=st;}
+  }
+  document.querySelectorAll('#lang button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var l=b.getAttribute('data-l');if(l===LANG)return;LANG=l;
+      try{localStorage.setItem('leah_lang',l);}catch(e){}
+      applyLang();
+    });
+  });
+  applyLang();
 })();
 </script>
 </body>
