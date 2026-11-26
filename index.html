@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Leah Chang | Ocean Portfolio</title>
+<script src="config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -128,6 +129,19 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .links{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
 .btn{display:inline-block;font-family:var(--mono);font-size:12px;font-weight:700;padding:9px 16px;border-radius:999px;background:var(--ink);color:#FBF6E6;text-decoration:none}
 .btn:hover{background:var(--sea)}
+#ct-form{margin:14px 0 6px;display:grid;gap:10px}
+#ct-form label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink);text-transform:uppercase}
+#ct-form input,#ct-form textarea{display:block;width:100%;margin-top:4px;padding:9px 11px;border:1px solid rgba(20,49,59,.35);border-radius:8px;background:rgba(255,255,255,.7);font:500 14px/1.4 inherit;font-family:inherit;color:#15130f;text-transform:none;letter-spacing:0;box-sizing:border-box}
+#ct-form textarea{resize:vertical;min-height:110px}
+#ct-form input:focus,#ct-form textarea:focus{outline:2px solid var(--sea);outline-offset:1px}
+#ct-form .ctrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#ct-form .ct-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+#ct-form .ctact{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+#ct-form .btn{border:0;cursor:pointer}
+#ct-form .btn[disabled]{opacity:.55;cursor:default}
+#ct-status{font-family:var(--mono);font-size:12px}
+#ct-status.ok{color:#1f6b4a}#ct-status.err{color:#a63a2b}
+@media (max-width:720px){#ct-form .ctrow{grid-template-columns:1fr}}
 .gallery{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-bottom:6px}
 .gallery::-webkit-scrollbar{display:none}
 .gallery figure{flex:0 0 100%;min-width:0;scroll-snap-align:start}
@@ -526,7 +540,14 @@ body.playing .hpearl{display:block}
     <button class="x" data-close aria-label="Close">×</button>
     <div class="k">05 / CONTACT</div>
     <h2 id="ct-title">Send a message</h2>
-    <p>For speaking, performance and collaboration invitations, please reach out by email or find me on LinkedIn.</p>
+    <p>For speaking, performance and collaboration invitations, please send a message below, or reach out by email or LinkedIn.</p>
+    <form id="ct-form" novalidate autocomplete="on">
+      <div class="ctrow"><label>Name<input name="name" type="text" maxlength="80" autocomplete="name" required></label><label>Email<input name="email" type="email" maxlength="120" autocomplete="email" required></label></div>
+      <label>Subject<input name="subject" type="text" maxlength="120" required></label>
+      <label>Message<textarea name="message" rows="5" maxlength="2000" required></textarea></label>
+      <div class="ct-hp" aria-hidden="true"><label>Leave this empty<input name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
+      <div class="ctact"><button class="btn" type="submit" id="ct-send">Send message</button><span id="ct-status" role="status" aria-live="polite"></span></div>
+    </form>
     <div class="links">
       <a class="btn" href="mailto:murtail.lab@gmail.com">✉ murtail.lab@gmail.com</a>
       <a class="btn" href="https://www.linkedin.com/in/leah-tienhsichang/" target="_blank" rel="noopener">in LinkedIn</a>
@@ -1249,6 +1270,30 @@ body.playing .hpearl{display:block}
   var form=document.getElementById('pledge-form'),fErr=document.getElementById('f-err'),fSubmit=document.getElementById('f-submit'),
       certEl=document.getElementById('cert'),certStatus=document.getElementById('cert-status'),certMail=document.getElementById('cert-mail'),certDl=document.getElementById('cert-dl');
   var OWNER_EMAIL='murtail.lab@gmail.com',lastRec=null;
+  /* Contact form: the Google Apps Script Web App URL is set in config.js (see contact-form-apps-script.gs) */
+  var CONTACT_URL=(window.SITE_CONFIG&&window.SITE_CONFIG.CONTACT_URL)||'';
+  (function(){
+    var f=document.getElementById('ct-form');if(!f)return;
+    var st=document.getElementById('ct-status'),btn=document.getElementById('ct-send'),last=0;
+    function say(t,c){st.textContent=t;st.className=c||'';}
+    f.addEventListener('submit',function(e){
+      e.preventDefault();
+      var d={name:f.name.value.trim(),email:f.email.value.trim(),subject:f.subject.value.trim(),message:f.message.value.trim(),website:f.website.value};
+      if(!d.name||!d.email||!d.subject||!d.message){say('Please fill in every field.','err');return;}
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email)){say('Please enter a valid email address.','err');return;}
+      if(d.website){say('Message sent. Thank you!','ok');f.reset();return;}
+      if(Date.now()-last<20000){say('Please wait a moment before sending again.','err');return;}
+      if(!CONTACT_URL){
+        location.href='mailto:murtail.lab@gmail.com?subject='+encodeURIComponent(d.subject)+'&body='+encodeURIComponent(d.message+'\n\n— '+d.name+' ('+d.email+')');
+        say('Opening your email app\u2026','ok');return;
+      }
+      btn.disabled=true;say('Sending\u2026');
+      fetch(CONTACT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({name:d.name,email:d.email,subject:d.subject,message:d.message,page:location.href})})
+        .then(function(){last=Date.now();say('Message sent. Thank you!','ok');f.reset();})
+        .catch(function(){say('Could not send. Please email murtail.lab@gmail.com instead.','err');})
+        .then(function(){btn.disabled=false;});
+    });
+  })();
   var SUBMIT_URL=''; /* when hosted on your own domain: set this to your endpoint (it receives the JSON record via POST) */
   function saveRecord(rec){
     var cl=window.claude;
