@@ -542,10 +542,11 @@ body.playing .hpearl{display:block}
     <h2 id="ct-title">Send a message</h2>
     <p>For speaking, performance and collaboration invitations, please send a message below, or reach out by email or LinkedIn.</p>
     <form id="ct-form" novalidate autocomplete="on">
-      <div class="ctrow"><label>Name<input name="name" type="text" maxlength="80" autocomplete="name" required></label><label>Email<input name="email" type="email" maxlength="120" autocomplete="email" required></label></div>
-      <label>Subject<input name="subject" type="text" maxlength="120" required></label>
-      <label>Message<textarea name="message" rows="5" maxlength="2000" required></textarea></label>
+      <div class="ctrow"><label>Name *<input name="name" type="text" maxlength="80" autocomplete="name" required></label><label>Email *<input name="email" type="email" maxlength="120" autocomplete="email" required></label></div>
+      <label>Subject *<input name="subject" type="text" maxlength="120" required></label>
+      <label>Message *<textarea name="message" rows="5" maxlength="2000" required></textarea></label>
       <div class="ct-hp" aria-hidden="true"><label>Leave this empty<input name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
+      <div class="ct-req" style="font-family:var(--mono);font-size:11px;opacity:.7">* All fields are required.</div>
       <div class="ctact"><button class="btn" type="submit" id="ct-send">Send message</button><span id="ct-status" role="status" aria-live="polite"></span></div>
     </form>
     <div class="links">
