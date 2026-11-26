@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leah Chang | Ocean Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rope:#8F7B52; --ink:#14313B; --sea:#0F4C5C; --accent:#E8A33D; --paper:#F6F0E0;
+  --mono:'Space Mono',ui-monospace,monospace; --sans:'Archivo',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:#CFE0DF;color:var(--ink);font-family:var(--sans);overflow:hidden}
+body::before{content:"";position:fixed;inset:0;background:url(bg-ocean.jpg) center/cover no-repeat;z-index:-1}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+#loader{position:fixed;inset:0;z-index:50;background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .7s ease,visibility .7s}
+#loader.done{opacity:0;visibility:hidden}
+#loader h1{font-weight:900;font-size:clamp(56px,13vw,150px);letter-spacing:-.03em;line-height:1}
+#loader h1 span{color:var(--sea)}
+#loader p{font-family:var(--mono);font-size:13px;letter-spacing:.2em;margin-top:10px;text-align:center}
+#count{position:absolute;left:24px;bottom:20px;font-weight:700;font-size:28px;font-family:var(--mono)}
+
+.app{position:relative;height:100%}
+
+.side{position:absolute;left:10px;top:10px;bottom:10px;width:230px;z-index:2;padding:20px 16px;border:1.5px solid rgba(255,255,255,.85);border-radius:14px;background:rgba(255,255,255,.22);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font-family:var(--mono);font-size:11px;line-height:1.7;display:flex;flex-direction:column;overflow:hidden}
+.side h2{font-size:13px;letter-spacing:.06em;line-height:1.35}
+.side .tag{font-size:10px;color:#3d5560;margin-top:2px}
+.rule{border:0;border-top:1px solid rgba(20,49,59,.4);margin:14px 0}
+@media (max-height:640px){.roles,.big{display:none}}
+.side h3{font-size:11px;font-weight:700;margin-bottom:6px;letter-spacing:.06em}
+.side ol{list-style:none}
+.side li{display:flex;justify-content:space-between;gap:8px}
+.side li b{font-weight:700}
+.side li span{color:#3d5560}
+.big{margin-top:28px;font-family:var(--sans);font-weight:900;font-size:30px;line-height:1;letter-spacing:-.02em}
+.roles{font-size:10px;color:#3d5560;margin-top:12px}
+
+.board{position:absolute;inset:0}
+
+.slot{position:absolute;width:96px;text-align:center;transform:translate(-50%,0);font-family:var(--mono)}
+.slot i{display:grid;place-items:center;width:64px;height:64px;margin:0 auto;border:2px dashed var(--sea);border-radius:50%;font-style:normal;font-weight:700;font-size:16px;color:var(--sea);background:rgba(246,240,224,.75)}
+.slot em,.pill{display:block;margin-top:6px;font-style:normal;font-size:11px;font-weight:700;color:var(--ink);background:rgba(246,240,224,.95);border-radius:4px;padding:2px 6px;font-family:var(--mono);white-space:nowrap}
+.note{position:absolute;left:260px;bottom:12px;font-family:var(--mono);font-size:11px;background:rgba(246,240,224,.92);border-radius:6px;padding:6px 10px}
+
+.hang{position:absolute;transform:translateX(-50%);transform-origin:50% 0;display:flex;flex-direction:column;align-items:center;text-align:center}
+.hang:focus-visible{outline:3px solid var(--sea);outline-offset:6px;border-radius:6px}
+.hang .obj{position:relative;display:block;transform:rotate(var(--r,0deg));transform-origin:50% 0;filter:drop-shadow(0 10px 10px rgba(20,49,59,.28));transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
+.hang .obj>img:first-child{display:block;height:var(--h);width:auto}
+.hang:hover .obj,.hang:focus-visible .obj{transform:rotate(calc(var(--r,0deg) - 5deg)) scale(1.05)}
+.hang.soft{cursor:default}
+.hint{font-family:var(--mono);font-size:10px;margin-top:4px;color:var(--ink);background:var(--accent);border-radius:4px;padding:2px 6px;opacity:0;transform:translateY(-4px);transition:.2s;white-space:nowrap}
+.hang:hover .hint,.hang:focus-visible .hint{opacity:1;transform:none}
+
+.modal{position:fixed;inset:0;z-index:40;background:rgba(20,49,59,.55);display:none;align-items:center;justify-content:center;padding:20px}
+.modal.open{display:flex}
+.paper{position:relative;max-width:460px;width:100%;background:#FBF6E6;border:1px solid var(--rope);border-radius:6px;padding:30px 28px 26px;box-shadow:0 0 0 6px rgba(251,246,230,.35);transform-origin:50% 100%;animation:unroll .45s cubic-bezier(.2,1.2,.4,1)}
+@keyframes unroll{from{transform:scaleY(.2);opacity:0}to{transform:none;opacity:1}}
+.paper .k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:#5b6b70}
+.paper h2{font-weight:900;font-size:34px;letter-spacing:-.02em;margin:6px 0 14px}
+.paper p{font-size:15px;line-height:1.65;margin-bottom:12px}
+.paper ul{list-style:none;font-family:var(--mono);font-size:12px;border-top:1px solid var(--rope);padding-top:12px}
+.paper li{padding:2px 0}
+.paper li::before{content:"→ "}
+.paper.wide{max-width:760px;max-height:86vh;overflow:auto;scrollbar-width:none}
+.paper.wide::-webkit-scrollbar{display:none}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.chip{font-family:var(--mono);font-size:11px;padding:5px 12px;border:1px solid var(--rope);border-radius:999px;background:transparent}
+.chip:hover{background:rgba(143,123,82,.15)}
+.chip.on{background:var(--ink);color:#FBF6E6;border-color:var(--ink)}
+.paper ul.works{list-style:none;border-top:1px solid var(--rope);padding:0;font-family:var(--sans);font-size:15px}
+.paper .works li::before{content:none}
+.paper .works li{display:grid;grid-template-columns:54px 1fr;gap:4px 14px;padding:12px 8px;border-bottom:1px solid rgba(143,123,82,.4);transition:background .2s}
+.works li:hover{background:rgba(232,163,61,.18)}
+.works .yr{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--sea);padding-top:2px}
+.works .ttl{font-weight:700;font-size:15px;line-height:1.35}
+.works .rl{grid-column:2;font-family:var(--mono);font-size:11px;color:#4b5f66}
+.licenses{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin-top:8px}
+.lic{position:relative;min-height:210px;padding:16px 16px 14px;border-radius:10px;background:#0E2A47;color:#E9C46A;border:1px solid #E9C46A;outline:1px solid rgba(233,196,106,.45);outline-offset:-6px;display:flex;flex-direction:column;transition:transform .25s ease,box-shadow .25s ease}
+.lic:hover{transform:translateY(-6px) rotate(-1deg);box-shadow:0 14px 22px rgba(14,42,71,.35)}
+.lic .org{font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.2em}
+.lic .prog{font-weight:900;font-size:26px;line-height:1.1;letter-spacing:-.01em;color:#F6E9C4;margin-top:auto}
+.lic .issuer{font-family:var(--mono);font-size:11px;line-height:1.4;color:rgba(246,233,196,.85);margin-top:8px}
+.lic .no{font-size:10px;letter-spacing:.04em;text-transform:none;word-break:break-all;opacity:.85}
+.lic .foot{display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin-top:16px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;border-top:1px solid rgba(233,196,106,.45);padding-top:10px}
+@media (prefers-reduced-motion:reduce){.lic{transition:none}}
+.traits{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:6px}
+.trait{padding:16px;border:1px solid rgba(143,123,82,.55);border-radius:10px;background:rgba(243,235,221,.6);transition:transform .25s ease,background .25s}
+.trait:hover{transform:translateY(-4px);background:rgba(232,163,61,.16)}
+.trait h3{font-size:18px;font-weight:900;margin:8px 0 4px;letter-spacing:-.01em}
+.trait p{font-size:14px;line-height:1.55;margin:0}
+.paper .sub{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#5b6b70;margin:18px 0 8px}
+.paper ul.brands{list-style:none;display:flex;flex-wrap:wrap;gap:8px;border-top:0;padding-top:0;font-family:var(--sans);font-size:13px}
+.paper .brands li{padding:5px 12px;border:1px solid var(--rope);border-radius:999px}
+.paper .brands li::before{content:none}
+.paper .muted{color:#5b6b70;font-size:13px}
+#see-all{margin-top:16px}
+@media (prefers-reduced-motion:reduce){.trait{transition:none}}
+.about-head{padding-right:34px;display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:6px}
+.about-head h2{margin-bottom:6px}
+.portrait{flex:none;width:112px;height:140px;object-fit:cover;border:5px solid #fff;border-radius:4px;box-shadow:0 8px 16px rgba(20,49,59,.28);transform:rotate(3deg)}
+@media (max-width:480px){.portrait{width:88px;height:110px}}
+/*detail*/
+[hidden]{display:none!important}
+.paper .works li{display:block;padding:0}
+.row{display:grid;grid-template-columns:54px 1fr 22px;gap:0 14px;width:100%;text-align:left;padding:12px 8px;border-bottom:1px solid rgba(143,123,82,.4);transition:background .2s}
+.row:hover,.row:focus-visible{background:rgba(232,163,61,.18)}
+.row .yr{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--sea);padding-top:2px}
+.row .rt{display:flex;flex-direction:column;gap:3px;min-width:0}
+.row .ttl{font-weight:700;font-size:15px;line-height:1.35}
+.row .rl{font-family:var(--mono);font-size:11px;color:#4b5f66}
+.row .go{align-self:center;font-family:var(--mono);color:var(--sea)}
+.dnav{display:flex;align-items:center;gap:8px;margin:0 36px 14px 0;flex-wrap:wrap}
+.dnav .sp{flex:1}
+.dtitle{font-weight:900;font-size:28px;line-height:1.15;letter-spacing:-.02em;margin:4px 0 6px}
+.drole{font-family:var(--mono);font-size:12px;color:#4b5f66;margin-bottom:14px}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px;padding:12px 0;border-top:1px solid var(--rope);border-bottom:1px solid rgba(143,123,82,.4);margin-bottom:14px}
+.meta dt{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#5b6b70;padding-top:2px}
+.meta dd{margin:0}
+.dstory p{font-size:15px;line-height:1.65;margin-bottom:10px}
+.dhl{list-style:none;margin:6px 0 14px;padding:0}
+.dhl li{padding:3px 0 3px 18px;position:relative;font-size:14px}
+.dhl li::before{content:"★";position:absolute;left:0;color:var(--accent)}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.btn{display:inline-block;font-family:var(--mono);font-size:12px;font-weight:700;padding:9px 16px;border-radius:999px;background:var(--ink);color:#FBF6E6;text-decoration:none}
+.btn:hover{background:var(--sea)}
+.gallery{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-bottom:6px}
+.gallery::-webkit-scrollbar{display:none}
+.gallery figure{flex:0 0 100%;min-width:0;scroll-snap-align:start}
+.gallery img{display:block;width:100%;height:min(52vh,440px);object-fit:contain;background:rgba(20,49,59,.08);border-radius:6px}
+.gallery figcaption{font-family:var(--mono);font-size:11px;color:#4b5f66;padding:6px 2px 0}
+.gnav{display:flex;gap:8px;margin-bottom:14px}
+.paper.wide.has-photos{max-width:1040px}
+.dbody.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:0 28px;align-items:start}
+.dbody.two .dphotos{position:sticky;top:0}
+.dbody.two .meta{border-top:0;padding-top:0}
+.dbody.two .gallery img{height:min(54vh,430px)}
+.x{position:absolute;top:10px;right:12px;width:32px;height:32px;border-radius:50%;font-size:20px;line-height:1}
+.x:hover{background:rgba(20,49,59,.1)}
+
+@media (max-width:720px){
+  body{overflow:auto}
+  .app{height:auto;min-height:100%;padding-bottom:30px}
+  .side{position:relative;left:auto;top:auto;bottom:auto;width:auto;margin:10px;padding:18px 18px 16px;background:rgba(255,255,255,.3)}
+  .side .rule,.side h3,.side ol,.side .objhint{display:none}
+  .side .big{margin-top:14px;font-size:26px}
+  .board{position:relative;inset:auto;display:grid;grid-template-columns:1fr 1fr;gap:34px 6px;padding:18px 10px 30px;justify-items:center;align-items:end}
+  .hang{position:relative;left:auto!important;top:auto!important;transform:none}
+  .hang img{height:auto;width:min(40vw,170px)}
+  .hang img[src*="bottle"],.hang img[src*="tag"]{width:min(25vw,105px)}
+  .hang img[src*="binoculars"]{width:min(38vw,160px)}
+  .hint{display:none}
+  .note{display:none}
+  .lic{min-height:150px}
+  .dtitle{font-size:22px}
+  .dbody.two{display:flex;flex-direction:column}
+  .dbody.two .dphotos{order:-1;position:static;margin-bottom:12px}
+  .dbody.two .gallery img{height:min(52vh,420px)}
+}
+@media (prefers-reduced-motion:reduce){#loader{transition:none}.paper{animation:none}}
+/*fxv2*/
+
+#fx,#deep{position:fixed;inset:0;pointer-events:none}
+#fx{z-index:0;width:100%;height:100%}
+#deep{z-index:0;opacity:0;background:linear-gradient(180deg,rgba(6,38,68,.35) 0%,rgba(2,16,34,.95) 100%)}
+.hang .obj{animation:sway 6.5s ease-in-out infinite}
+.hang:nth-child(2) .obj{animation-delay:-1.2s}.hang:nth-child(3) .obj{animation-delay:-2.6s}.hang:nth-child(4) .obj{animation-delay:-3.4s}.hang:nth-child(5) .obj{animation-delay:-4.4s}.hang:nth-child(6) .obj{animation-delay:-5.4s}
+@keyframes sway{0%,100%{transform:rotate(calc(var(--r,0deg) - 1.3deg))}50%{transform:rotate(calc(var(--r,0deg) + 1.3deg))}}
+@keyframes bob{0%,100%{transform:rotate(calc(var(--r,0deg) - 6deg)) translateY(0)}50%{transform:rotate(calc(var(--r,0deg) + 4deg)) translateY(-9px)}}
+@keyframes swing{0%,100%{transform:rotate(calc(var(--r,0deg) - 10deg))}50%{transform:rotate(calc(var(--r,0deg) + 10deg))}}
+@keyframes scan{0%,100%{transform:rotate(calc(var(--r,0deg) - 9deg)) scale(1.06)}50%{transform:rotate(calc(var(--r,0deg) + 9deg)) scale(1.06)}}
+@keyframes shiver{0%,100%{transform:rotate(calc(var(--r,0deg) - 3deg)) scale(1.07)}25%{transform:rotate(calc(var(--r,0deg) + 5deg)) scale(1.12)}50%{transform:rotate(calc(var(--r,0deg) - 4deg)) scale(1.07)}75%{transform:rotate(calc(var(--r,0deg) + 3deg)) scale(1.1)}}
+@keyframes lift{to{transform:translateY(-14px) rotate(calc(var(--r,0deg) - 4deg)) scale(1.06)}}
+@keyframes tilt{to{transform:translateY(-10px) rotate(calc(var(--r,0deg) + 5deg)) scale(1.05)}}
+.hang[data-fx=bob]:hover .obj,.hang[data-fx=bob]:focus-visible .obj{animation:bob 1.1s ease-in-out infinite}
+.hang[data-fx=swing]:hover .obj,.hang[data-fx=swing]:focus-visible .obj{animation:swing 1.3s ease-in-out infinite}
+.hang[data-fx=scan]:hover .obj,.hang[data-fx=scan]:focus-visible .obj{animation:scan 1.2s ease-in-out infinite}
+.hang[data-fx=shiver]:hover .obj,.hang[data-fx=shiver]:focus-visible .obj{animation:shiver .9s ease-in-out infinite}
+.hang[data-fx=lift]:hover .obj,.hang[data-fx=lift]:focus-visible .obj{animation:lift .35s cubic-bezier(.3,1.5,.5,1) forwards}
+.hang[data-fx=tilt]:hover .obj,.hang[data-fx=tilt]:focus-visible .obj{animation:tilt .35s cubic-bezier(.3,1.5,.5,1) forwards}
+.hang{translate:calc(var(--px,0) * var(--z,1) * 14px) calc(var(--py,0) * var(--z,1) * 10px)}
+.hang.glow .obj{filter:drop-shadow(0 0 16px rgba(255,236,160,.95)) drop-shadow(0 0 34px rgba(255,214,110,.7))}
+#gauge{position:fixed;right:14px;top:50%;transform:translateY(-50%);z-index:5;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55);cursor:pointer;user-select:none}
+#gauge .gline{position:relative;width:3px;height:180px;background:rgba(255,255,255,.5);border-radius:2px}
+#gauge .gline i{position:absolute;left:50%;top:0;width:13px;height:13px;margin:-6px 0 0 -6.5px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 8px rgba(255,255,255,.6)}
+#gauge .gm{font-weight:700;font-size:12px}
+#divehint{position:fixed;left:50%;bottom:64px;transform:translateX(-50%);z-index:5;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:#fff;background:rgba(20,49,59,.55);padding:6px 14px;border-radius:999px;pointer-events:none;transition:opacity .4s;white-space:nowrap;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+#snd{position:fixed;right:18px;top:16px;z-index:60;display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:14px;font-weight:700;color:#fff;background:var(--sea);border:2px solid #fff;border-radius:999px;padding:11px 20px 11px 16px;box-shadow:0 6px 18px rgba(20,49,59,.4);transition:transform .2s,background .2s}
+#snd:hover{transform:scale(1.06);background:#0b3a47}
+#snd .x{display:none}
+#snd[aria-pressed=false]{background:#8a5a2b}
+#snd[aria-pressed=false] .w{display:none}
+#snd[aria-pressed=false] .x{display:block}
+#snd.nudge{animation:sndPulse 1.6s ease-out 6}
+@keyframes sndPulse{0%{box-shadow:0 6px 18px rgba(20,49,59,.4),0 0 0 0 rgba(232,163,61,.9)}100%{box-shadow:0 6px 18px rgba(20,49,59,.4),0 0 0 22px rgba(232,163,61,0)}}
+.note-strip{margin:14px 0 4px;padding:12px 14px;border:1px dashed var(--rope);border-radius:6px;background:rgba(232,163,61,.12)}
+.note-strip .k{margin-bottom:4px}
+.note-strip p{font-size:15px;line-height:1.55;margin:0 0 10px;min-height:46px}
+.seg{display:flex;gap:8px;margin:0 0 14px}
+.seg .chip{padding:6px 16px}
+.mapwrap{position:relative;border:1px solid var(--rope);border-radius:8px;overflow:hidden;background:#cfe3e0}
+.mapwrap svg{display:block;width:100%;height:auto}
+.land{fill:#EADFC2;stroke:#8F7B52;stroke-width:.35;stroke-linejoin:round}
+.grat{stroke:#fff;stroke-opacity:.55;stroke-width:.25;stroke-dasharray:1.5 2;fill:none}
+.arc{fill:none;stroke:#0F4C5C;stroke-width:.6;stroke-dasharray:2 2;stroke-opacity:.75;animation:dash 6s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-40}}
+.pin{cursor:pointer;outline:none}
+.pin .dot{fill:#E8A33D;stroke:#fff;stroke-width:1}
+.pin .ring{fill:none;stroke:#E8A33D;stroke-width:.8;transform-box:fill-box;transform-origin:center;animation:ping 2.2s ease-out infinite}
+@keyframes ping{from{transform:scale(.6);opacity:.9}to{transform:scale(2.6);opacity:0}}
+.pin:hover .dot,.pin:focus-visible .dot,.pin.on .dot{fill:#0F4C5C}
+.pin text{font-family:var(--mono);font-size:5px;font-weight:700;fill:#14313B;paint-order:stroke;stroke:#fff;stroke-width:1.2px;pointer-events:none}
+.placechips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+#map-panel{border-top:1px solid var(--rope);min-height:70px;padding-top:6px}
+#map-panel .ph{font-family:var(--mono);font-size:12px;font-weight:700;margin:6px 0 4px;color:var(--sea)}
+.tl{position:relative;padding:6px 0 10px 58px}
+.tl-line{position:absolute;left:30px;top:0;bottom:0;width:3px;border-radius:2px;background:repeating-linear-gradient(180deg,#0F4C5C 0 8px,rgba(15,76,92,.25) 8px 14px)}
+.tl-mer{position:absolute;left:12px;top:0;width:40px;z-index:2;transition:top .25s ease-out;filter:drop-shadow(0 3px 4px rgba(20,49,59,.35))}
+.tl-year{font-family:var(--mono);font-weight:700;font-size:22px;color:var(--sea);margin:18px 0 6px}
+.tl-item{position:relative;display:block;width:100%;text-align:left;padding:10px 12px;margin:0 0 8px;border:1px solid rgba(143,123,82,.5);border-radius:8px;background:rgba(243,235,221,.7);opacity:0;transform:translateY(14px);transition:opacity .5s,transform .5s,background .2s}
+.tl-item.in{opacity:1;transform:none}
+.tl-item::before{content:"";position:absolute;left:-35px;top:18px;width:11px;height:11px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 2px var(--sea)}
+.tl-item:hover,.tl-item:focus-visible{background:rgba(232,163,61,.2)}
+.tl-item .ttl{display:block;font-weight:700;font-size:14.5px;line-height:1.35}
+.tl-item .rl{display:block;font-family:var(--mono);font-size:11px;color:#4b5f66;margin-top:2px}
+
+/* parts: bottle / shell / binoculars */
+.hang .obj>img.cork{position:absolute;left:0;top:0;width:100%;height:100%;transform-origin:50% 8%;pointer-events:none}
+.hang .scrollglow{position:absolute;left:30%;top:36%;width:30%;height:50%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,236,170,.75),rgba(255,236,170,0));opacity:0;pointer-events:none;mix-blend-mode:screen;transform:rotate(14deg)}
+.hang .slip{position:absolute;left:37%;top:6%;width:26%;height:36%;opacity:0;transform-origin:50% 100%;pointer-events:none;background:linear-gradient(90deg,#d9c48f,#f4e7bd 30%,#f9efce 60%,#d4bd86);border:1px solid #8F7B52;border-radius:2px;box-shadow:0 2px 4px rgba(20,49,59,.35),inset 0 4px 0 #c4a96c,inset 0 -4px 0 #c4a96c;display:flex;flex-direction:column;justify-content:space-evenly;padding:0 14%}
+.hang .slip i{display:block;height:2px;background:rgba(95,70,35,.55);border-radius:1px}
+.hang .slip i:nth-child(2){width:80%}.hang .slip i:nth-child(4){width:60%}
+@keyframes corkWiggle{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-4%) rotate(-5deg)}60%{transform:translateY(-3%) rotate(4deg)}}
+@keyframes corkPop{0%{transform:translateY(0) rotate(0);opacity:1}35%{transform:translateY(-130%) rotate(-28deg);opacity:1}70%{transform:translateY(-150%) translateX(60%) rotate(80deg);opacity:1}100%{transform:translateY(-100%) translateX(95%) rotate(170deg);opacity:0}}
+@keyframes slipOut{0%{opacity:0;transform:translateY(60%) scaleY(.08)}25%{opacity:1;transform:translateY(0) scaleY(.2)}100%{opacity:1;transform:translateY(-112%) scaleY(1.7)}}
+@keyframes glowPulse{0%,100%{opacity:.15}50%{opacity:.9}}
+.hang[data-fx=bob]:hover .obj,.hang[data-fx=bob]:focus-visible .obj{animation:sway 6.5s ease-in-out infinite}
+.hang[data-fx=bob]:hover .cork,.hang[data-fx=bob]:focus-visible .cork{animation:corkWiggle 1s ease-in-out infinite}
+.hang[data-fx=bob]:hover .scrollglow,.hang[data-fx=bob]:focus-visible .scrollglow{animation:glowPulse 1.4s ease-in-out infinite}
+.hang.popping .cork{animation:corkPop .85s cubic-bezier(.2,.8,.4,1) forwards!important}
+.hang.popping .slip{animation:slipOut .9s .15s ease-out forwards}
+.hang.popping .scrollglow{animation:glowPulse .5s ease-in-out 2!important}
+.hang .glint{position:absolute;overflow:hidden;border-radius:50%;pointer-events:none}
+.hang .glint.g1{left:8%;top:44%;width:21%;height:29%;transform:rotate(-8deg)}
+.hang .glint.g2{left:52%;top:64%;width:23%;height:27%;transform:rotate(-8deg)}
+.hang .glint::before{content:"";position:absolute;top:-20%;left:-60%;width:55%;height:140%;background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,1) 50%,rgba(255,255,255,0));transform:skewX(-18deg);animation:streak 3.6s ease-in-out infinite}
+.hang .glint.g2::before{animation-delay:.35s}
+.hang .glint::after{content:"";position:absolute;right:20%;top:16%;width:20%;height:20%;border-radius:50%;background:#fff;box-shadow:0 0 10px 4px rgba(255,255,255,.95);opacity:0;animation:twinkle 3.6s ease-in-out infinite}
+.hang .glint.g2::after{animation-delay:.35s}
+@keyframes streak{0%,30%{left:-70%}65%,100%{left:130%}}
+@keyframes twinkle{0%,40%,100%{opacity:0;transform:scale(.4)}55%{opacity:1;transform:scale(1.3)}}
+.hang[data-fx=scan]:hover .glint::before,.hang[data-fx=scan]:focus-visible .glint::before{animation-duration:1s}
+.hang[data-fx=scan]:hover .glint::after,.hang[data-fx=scan]:focus-visible .glint::after{animation-duration:1s}
+.tl-mer img{display:block;width:46px;height:auto;transition:transform .25s ease-out}
+
+.hang .pearls{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.hang .pearls b{position:absolute;left:50%;top:-4%;width:15%;aspect-ratio:1;margin-left:-7.5%;border-radius:50%;opacity:0;background:radial-gradient(circle at 34% 30%,#fff 0 18%,#fbf4e4 38%,#d9ccb0 78%,#b9a98a);box-shadow:0 0 10px 3px rgba(255,255,255,.85),0 3px 6px rgba(20,49,59,.35)}
+.hang .pearls b:nth-child(1){--dx:-60%;--d:0s}.hang .pearls b:nth-child(2){--dx:20%;--d:.35s}.hang .pearls b:nth-child(3){--dx:90%;--d:.7s}.hang .pearls b:nth-child(4){--dx:-20%;--d:1.05s}.hang .pearls b:nth-child(5){--dx:55%;--d:1.4s}
+@keyframes pearlUp{0%{opacity:0;transform:translate(0,40%) scale(.3)}15%{opacity:1}70%{opacity:1}100%{opacity:0;transform:translate(var(--dx),-260%) scale(1.05)}}
+.hang[data-fx=shiver]:hover .pearls b,.hang[data-fx=shiver]:focus-visible .pearls b{animation:pearlUp 2.1s ease-out infinite;animation-delay:var(--d)}
+body.dive .side,body.dive .side *{color:#EAF6F6!important}
+.side,.side *{transition:color .6s}
+@media (max-width:720px){
+  .hang{translate:none}
+  #gauge{display:none}
+  #snd{right:10px;top:10px;padding:9px 14px 9px 12px;font-size:13px}
+  #divehint{bottom:50px}
+  .tl{padding-left:50px}.tl-line{left:24px}.tl-mer{left:6px}.tl-item::before{left:-31px}
+}
+@media (prefers-reduced-motion:reduce){
+  .hang .obj,.hang .obj *{animation:none!important}.hang{translate:none}#fx{display:none}
+  .arc,.pin .ring{animation:none}.tl-item{opacity:1;transform:none;transition:none}
+}
+
+
+/* ===== v3: dive lever, torch, clean-up game, breath, mermaid, drag ===== */
+.side{z-index:6}
+.hang{transform-origin:0 0;user-select:none;-webkit-user-select:none;touch-action:pan-y}
+body.dive .hang:not(.glow) .obj{filter:drop-shadow(0 0 12px rgba(110,255,230,.55)) drop-shadow(0 8px 8px rgba(0,0,0,.35))}
+
+/* depth lever */
+#gauge{background:rgba(20,49,59,.52);border:1.5px solid rgba(255,255,255,.8);border-radius:22px;padding:12px 14px 10px;gap:9px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);touch-action:none;font-size:11px;font-weight:700}
+#gauge .gline{margin:10px 0;width:8px;height:220px;border-radius:4px;background:linear-gradient(180deg,#bff3ff,#4aa6c8 40%,#12446a 75%,#041a30);box-shadow:0 0 0 1.5px rgba(255,255,255,.7)}
+#gauge .gline i{width:28px;height:28px;margin:-14px 0 0 -14px;display:grid;place-items:center;font-style:normal;cursor:grab;box-shadow:0 3px 10px rgba(0,0,0,.45)}
+#gauge .gline i::after{content:"⇅";font-size:15px;line-height:1;color:var(--ink);font-weight:900}
+#gauge .gline s{position:absolute;right:16px;transform:translateY(-50%);text-decoration:none;font-size:9px;opacity:.9}
+#gauge .gline:focus-visible{outline:2px solid #fff;outline-offset:6px}
+#divebtn{font-family:var(--mono);font-weight:800;font-size:13px;letter-spacing:.06em;color:var(--ink);background:var(--accent);border:2px solid #fff;border-radius:999px;padding:10px 16px;cursor:pointer;white-space:nowrap;animation:divepulse 1.8s ease-in-out infinite}
+#divebtn:hover{filter:brightness(1.08)}
+@keyframes divepulse{0%,100%{box-shadow:0 6px 16px rgba(20,49,59,.4),0 0 0 0 rgba(232,163,61,.75)}60%{box-shadow:0 6px 16px rgba(20,49,59,.4),0 0 0 14px rgba(232,163,61,0)}}
+@media (max-height:640px){#gauge .gline{height:150px}}
+
+/* torch */
+#torch{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:0;background:radial-gradient(circle at var(--tx,60%) var(--ty,50%),rgba(2,10,22,0) 0,rgba(2,10,22,0) calc(var(--tr,170px)*.4),rgba(2,10,22,.93) var(--tr,170px))}
+#torch::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at var(--tx,60%) var(--ty,50%),rgba(255,240,190,.12),rgba(255,240,190,0) calc(var(--tr,170px)*1.15));mix-blend-mode:screen}
+#beacon{position:fixed;left:0;top:0;z-index:5;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;pointer-events:none;opacity:0;background:radial-gradient(circle,rgba(255,238,170,.95),rgba(255,214,110,.5) 40%,rgba(255,214,110,0) 70%);animation:beacon 1.6s ease-in-out infinite}
+@keyframes beacon{0%,100%{scale:.7}50%{scale:1.25}}
+
+/* murky water -> clean */
+#murk{position:fixed;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(96,104,48,.30),rgba(70,80,40,.40))}
+#trashbox{position:fixed;inset:0;z-index:3;pointer-events:none}
+.trash{position:absolute;pointer-events:auto;border:0;background:none;padding:0;cursor:pointer;width:var(--s,54px);height:var(--s,54px);filter:drop-shadow(0 4px 5px rgba(20,40,40,.5));animation:trashIn .6s ease-out backwards,trashDrift var(--dur,9s) ease-in-out infinite alternate}
+.trash svg{width:100%;height:100%;display:block}
+@keyframes trashIn{from{opacity:0;scale:.3}to{opacity:1;scale:1}}
+@keyframes trashDrift{from{transform:translate(0,0) rotate(var(--r0,-12deg))}to{transform:translate(var(--dx,40px),var(--dy,-24px)) rotate(var(--r1,14deg))}}
+.trash:hover,.trash:focus-visible{scale:1.18;outline:2px dashed #fff;outline-offset:4px;border-radius:8px}
+.trash.gone{animation:trashPop .38s ease-out forwards;pointer-events:none}
+@keyframes trashPop{to{opacity:0;scale:1.7;filter:brightness(2.2)}}
+
+/* hud */
+#hud{position:fixed;left:260px;bottom:14px;z-index:5;display:none;gap:10px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;font-weight:700;color:#fff}
+#hud .chip{display:flex;align-items:center;gap:8px;background:rgba(20,49,59,.66);border:1.5px solid rgba(255,255,255,.75);border-radius:999px;padding:8px 14px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+#hud .bar{display:block;width:70px;height:6px;background:rgba(255,255,255,.3);border-radius:3px;overflow:hidden}
+#hud .bar u{display:block;height:100%;width:0;background:#9fe8d4;transition:width .4s}
+#toast{position:fixed;left:50%;bottom:110px;transform:translate(-50%,10px);z-index:8;font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;background:rgba(20,49,59,.86);border:1.5px solid rgba(255,255,255,.85);border-radius:999px;padding:9px 18px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:720px){
+  .hang{transform-origin:50% 0}
+  #divehint{display:none}
+  #gauge{display:flex;right:6px;top:50%;bottom:auto;transform:translateY(-50%);padding:10px 8px 8px;gap:6px;font-size:10px;border-radius:20px}
+  #gauge .gline{height:min(38vh,250px);margin:10px 0}
+  #gauge .gline i{width:36px;height:36px;margin:-18px 0 0 -18px}
+  #gauge .gline s,#gz,#divebtn{display:none}
+  .board{padding-right:64px}
+  html,body{overflow-x:hidden;max-width:100%}.app{overflow-x:clip}
+  #hud{left:10px;bottom:12px;flex-direction:column;gap:6px;font-size:11px}
+  #hud .chip{padding:6px 11px;align-self:flex-start}
+  #toast{bottom:110px;font-size:12px;white-space:normal;text-align:center;border-radius:18px;width:max-content}
+}
+@media (prefers-reduced-motion:reduce){
+  #divebtn,.hpearl,#beacon,.trash{animation:none!important}
+}
+body.playing #hud{display:flex}
+.trash{width:var(--s,96px);height:auto}
+.trash img{width:100%;height:auto;display:block;pointer-events:none;-webkit-user-drag:none;user-select:none}
+ #fact{position:fixed;left:50%;top:50%;z-index:9;width:min(980px,94vw,calc(84vh*1.5));aspect-ratio:3/2;transform:translate(-50%,-46%) scale(.96);opacity:0;pointer-events:none;transition:opacity .28s,transform .28s;container-type:inline-size;border-radius:16px;overflow:hidden;box-shadow:0 14px 44px rgba(8,26,36,.55);cursor:pointer;background:#fff}
+#fact.on{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto}
+#fact.P{width:min(94vw,calc(84vh*.8));aspect-ratio:4/5}
+#fact .fbg{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;user-select:none}
+#fact .ftx{position:absolute;left:var(--l);top:var(--t);width:var(--w);height:var(--h);color:#15130f;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+#fact b{display:block;font-weight:900;font-size:var(--ts);line-height:1.12;margin-bottom:.4em;letter-spacing:-.01em}
+#fact p{margin:0;font-size:var(--fs);line-height:1.36;font-weight:600}
+#fact.L.lit{--l:9.5%;--t:34%;--w:83%;--h:36%;--ts:3.6cqw;--fs:2.5cqw}
+#fact.P.lit{--l:27%;--t:34%;--w:58%;--h:53%;--ts:5.2cqw;--fs:3.8cqw}
+#fact.L.pearl{--l:33%;--t:49%;--w:32.5%;--h:42%;--ts:2.5cqw;--fs:1.9cqw}
+#fact.P.pearl{--l:25%;--t:42%;--w:51%;--h:31%;--ts:4.3cqw;--fs:3.2cqw}
+#fact .fx{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;border:2px solid #fff;background:rgba(20,49,59,.78);color:#fff;font-size:20px;line-height:1;cursor:pointer}
+ .hang.soon{cursor:default}
+.hang.soon:hover .obj,.hang.soon:focus-visible .obj{transform:rotate(var(--r,0deg))}
+.hang.soon .obj>img:first-child{filter:saturate(.75)}
+.tape{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%) rotate(-9deg);width:128%;padding:.45em 0;text-align:center;font:700 clamp(10px,1.05vw,13px)/1.1 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#4a3a1c;background:rgba(236,218,160,.74);border-top:1px dashed rgba(120,96,40,.35);border-bottom:1px dashed rgba(120,96,40,.35);box-shadow:0 1px 4px rgba(20,49,59,.25);pointer-events:none;-webkit-backdrop-filter:blur(1px);backdrop-filter:blur(1px)}
+.learned{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.learned span{font-size:12px;background:rgba(120,190,200,.25);border-radius:999px;padding:4px 10px}
+#murk{opacity:0}
+/* pearls (v4: big, glowing, easy to spot) */
+.hpearl{display:none;position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:0;padding:0;cursor:pointer;z-index:2;background:radial-gradient(circle at 34% 30%,#fff 0 22%,#fff6d8 42%,#f1d58a 80%,#d9a93f);box-shadow:0 0 0 3px rgba(255,255,255,.95),0 0 16px 7px rgba(255,214,110,.95),0 0 38px 14px rgba(255,255,255,.55);animation:pearlTw 1.8s ease-in-out infinite}
+body.playing .hpearl{display:block}
+.hpearl[data-d="d"]{opacity:0;pointer-events:none;z-index:5}
+.hpearl::before{content:"";position:absolute;inset:-6px;border-radius:50%;border:3px solid rgba(255,255,255,.95);animation:pearlRing 1.8s ease-out infinite;pointer-events:none}
+.hpearl::after{content:"\2726";position:absolute;left:100%;top:-12px;margin-left:2px;font-size:22px;line-height:1;color:#fff;text-shadow:0 0 8px #ffd978,0 0 14px #fff;animation:pearlTw 1.8s ease-in-out infinite reverse;pointer-events:none}
+.hpearl:focus-visible{outline:2px solid var(--accent);outline-offset:6px}
+@keyframes pearlTw{0%,100%{scale:1}50%{scale:1.2}}
+@keyframes pearlRing{0%{scale:.8;opacity:1}100%{scale:2.4;opacity:0}}
+.hpearl.got{transition:scale .5s,opacity .5s;scale:2.4;opacity:0!important;pointer-events:none;animation:none}
+.hpearl.got::before,.hpearl.got::after{display:none}
+
+/* game card, form, certificate */
+.paper .gl{border-top:1px solid var(--rope);padding-top:12px;margin:12px 0}
+.paper .gl li{padding:6px 0;line-height:1.5}
+.paper .gl li b{font-weight:800}
+#game-start,#pledge-cta{margin-top:10px}
+#pledge-form label{display:block;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.04em;margin:12px 0 4px;text-transform:uppercase}
+#pledge-form input,#pledge-form textarea{display:block;width:100%;font-family:var(--mono);font-size:13px;color:var(--ink);background:#fffdf6;border:1.5px solid var(--rope);border-radius:6px;padding:9px 10px}
+#pledge-form textarea{resize:vertical;min-height:84px}
+#pledge-form input:focus,#pledge-form textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+#pledge-form .fine{font-family:var(--mono);font-size:10.5px;color:#3d5560;margin:10px 0 0}
+#f-err{min-height:18px;font-family:var(--mono);font-size:12px;font-weight:700;color:#b3392c;margin:8px 0 0}
+#f-submit:disabled{opacity:.6;cursor:wait}
+.paper.wide{max-width:900px}
+#cert{display:block;width:100%;height:auto;border:1px solid var(--rope);border-radius:4px;background:#F6F0E0;margin:10px 0}
+.cert-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.cert-actions a.chip{text-decoration:none;display:inline-block}
+.cert-actions a[hidden]{display:none}
+</style>
+</head>
+<body>
+
+<div id="loader" role="status" aria-live="polite">
+  <h1>LE<span>A</span>H</h1>
+  <p>TIEN HSI CHANG · OCEAN PORTFOLIO</p>
+  <p style="margin-top:6px;opacity:.7">BEST WITH SOUND ON</p>
+  <div id="count">0%</div>
+</div>
+
+<canvas id="fx" aria-hidden="true"></canvas>
+<div id="deep" aria-hidden="true"></div>
+<div id="murk" aria-hidden="true"></div>
+<div id="gauge"><button id="divebtn" type="button" aria-label="Dive deeper or surface">DIVE &#8595;</button><span id="gz">Shallows</span><div class="gline" id="gline"><i id="gdot"></i><s style="top:0">0</s><s style="top:33.3%">10</s><s style="top:66.6%">20</s><s style="top:100%">30</s></div><span class="gm" id="gm">0 m</span></div>
+<div id="divehint" aria-hidden="true">Scroll to dive ↓</div>
+<div id="torch" aria-hidden="true"></div>
+<div id="beacon" aria-hidden="true"></div>
+<div id="trashbox"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="fact" role="status" aria-live="polite"><img class="fbg" alt="" draggable="false"><div class="ftx"><b></b><p></p></div><button class="fx" type="button" aria-label="Close">&times;</button></div>
+<div id="hud"><div class="chip">Ocean cleanup <span id="cl-n">0/8</span><i class="bar"><u id="cl-bar"></u></i></div><div class="chip">Pearls <span id="pl-n">0/6</span></div></div>
+
+<button id="snd" type="button" aria-pressed="true" aria-label="Sound on. Click to turn off."><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9H3z" fill="currentColor"/><g class="w" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></g><path class="x" d="M15 9l6 6M21 9l-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg><span id="snd-t">Sound on</span></button>
+<main class="app">
+  <aside class="side">
+    <h2>TIEN HSI CHANG (LEAH)<br>PORTFOLIO</h2>
+    <div class="tag">WHERE THE OCEAN MEETS NEW VOICES.</div>
+    <hr class="rule">
+    <h3>MAP LEGEND</h3>
+    <ol>
+      <li><b>01 Bottle</b><span>About</span></li>
+      <li><b>02 Folder</b><span>Works</span></li>
+      <li><b>03 Tag</b><span>Dive Certs</span></li>
+      <li><b>04 Shell</b><span>Traits</span></li>
+      <li><b>05 Envelope</b><span>Contact</span></li>
+      <li><b>06 Binoculars</b><span>Updates</span></li>
+      <li><b>07 Ticket</b><span>Advocacy Game</span></li>
+    </ol>
+    <hr class="rule">
+    <h3>OBJECT INTERFACE</h3>
+    <div class="objhint">→ Hover for details</div>
+    <div class="objhint">→ Click to unfold</div>
+    <div class="big">OCEAN<br>STORIES &amp;<br>YOUTH VOICE.</div>
+    <div class="roles">Mermaid Performer<br>Youth Ocean Sustainability Advocate<br>TEDx Youth Speaker</div>
+  </aside>
+
+  <section class="board" aria-label="Ocean collage board">
+    <button class="hang" id="bottle" data-open="modal-about" style="left:32%;top:6%;--h:25vh;--r:-3deg" aria-haspopup="dialog" aria-label="01 About me, open message bottle">
+      <span class="obj"><img src="bottle_base.png" alt=""><img class="cork" src="cork.png" alt=""><span class="slip" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="scrollglow" aria-hidden="true"></span></span>
+      <span class="pill">01 About Me</span>
+      <span class="hint">Click to unfold</span>
+    </button>
+    <button class="hang" data-open="modal-works" style="left:52%;top:9%;--h:20vh;--r:2deg" aria-haspopup="dialog" aria-label="02 Selected works, open folder"><span class="obj"><img src="folder.png" alt=""></span><span class="pill">02 Selected Works</span><span class="hint">Click to open</span></button>
+    <button class="hang" data-open="modal-licenses" style="left:69%;top:13%;--h:24vh;--r:3deg" aria-haspopup="dialog" aria-label="03 Dive licenses, open tag"><span class="obj"><img src="tag.png" alt=""></span><span class="pill">03 Dive Licenses</span><span class="hint">Click to open</span></button>
+    <button class="hang" data-open="modal-traits" style="left:29%;top:52%;--h:16.5vh;--r:-6deg" aria-haspopup="dialog" aria-label="04 Traits, open shell"><span class="obj"><img src="shell.png" alt=""><span class="pearls" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b></span></span><span class="pill">04 Traits</span><span class="hint">Click to open</span></button>
+    <button class="hang" data-open="modal-contact" style="left:47%;top:40%;--h:16vh;--r:2deg" aria-haspopup="dialog" aria-label="05 Contact, open envelope"><span class="obj"><img src="envelope.png" alt=""></span><span class="pill">05 Contact</span><span class="hint">Click to open</span></button>
+    <button class="hang" data-open="modal-updates" style="left:61%;top:62%;--h:14vh;--r:-4deg" aria-haspopup="dialog" aria-label="06 Updates, open binoculars"><span class="obj"><img src="binoculars.png" alt=""><span class="glint g1" aria-hidden="true"></span><span class="glint g2" aria-hidden="true"></span></span><span class="pill">06 Updates</span><span class="hint">Click to open</span></button>
+  <button class="hang soon" type="button" aria-disabled="true" tabindex="-1" style="left:41%;top:66%;--h:11.5vh;--r:-4deg" aria-label="07 Ocean advocacy game, coming soon"><span class="obj"><img src="ticket.png" alt=""><span class="tape">Coming soon</span></span><span class="pill">07 Ocean Advocacy Game</span><span class="hint">Coming soon</span></button>
+  <button class="hpearl" data-d="s" style="left:86%;top:22%" aria-label="Hidden pearl"></button><button class="hpearl" data-d="s" style="left:58%;top:84%" aria-label="Hidden pearl"></button><button class="hpearl" data-d="s" style="left:66%;top:47%" aria-label="Hidden pearl"></button><button class="hpearl" data-d="d" style="left:37%;top:36%" aria-label="Hidden pearl"></button><button class="hpearl" data-d="d" style="left:70%;top:90%" aria-label="Hidden pearl"></button><button class="hpearl" data-d="d" style="left:92%;top:92%" aria-label="Hidden pearl"></button>
+  </section>
+</main>
+
+<div class="modal" id="modal-about" role="dialog" aria-modal="true" aria-labelledby="about-title">
+  <div class="paper">
+    <button class="x" data-close aria-label="Close">×</button>
+    <div class="about-head">
+      <div><div class="k">01 / ABOUT ME</div>
+      <h2 id="about-title">Hi, I'm Leah.</h2></div>
+      <img class="portrait" src="leah.jpg" alt="Portrait of Leah Chang" width="112" height="140">
+    </div>
+    <p>I've been in the water since I was six months old, and I've been swimming for 10 years.</p>
+    <p>When I was 4, my mom showed me a news story about a mermaid gathering. I was hooked, and I became a mermaid too.</p>
+    <ul>
+      <li>Mermaid Performer</li>
+      <li>Youth Ocean Sustainability Advocate</li>
+      <li>TEDx Youth Speaker</li>
+    </ul>
+    <div class="note-strip"><div class="k">NOTE FROM THE BOTTLE</div><p id="note-text"></p><button class="chip" id="note-next" type="button">Pull another note ↻</button></div>
+  </div>
+</div>
+
+<div class="modal" id="modal-works" role="dialog" aria-modal="true" aria-labelledby="works-title">
+  <div class="paper wide" id="works-paper">
+    <button class="x" data-close aria-label="Close">×</button>
+    <div id="works-list-view">
+      <div class="k">02 / SELECTED WORKS</div>
+      <h2 id="works-title">Stages &amp; voices</h2>
+      <div class="seg" role="group" aria-label="Change view">
+        <button class="chip on" data-v="list" type="button">List</button>
+        <button class="chip" data-v="map" type="button">Map</button>
+        <button class="chip" data-v="time" type="button">Timeline</button>
+      </div>
+      <div id="v-list">
+        <div class="chips" role="group" aria-label="Filter works">
+          <button class="chip on" data-f="all">All</button>
+          <button class="chip" data-f="perf">Performance &amp; Competition</button>
+          <button class="chip" data-f="talk">Talks &amp; Forums</button>
+          <button class="chip" data-f="showcase">Showcase</button>
+        </div>
+        <ul class="works" id="works-list"></ul>
+      </div>
+      <div id="v-map" hidden>
+        <div class="mapwrap" id="mapwrap"></div>
+        <div class="placechips" id="placechips" role="group" aria-label="Places"></div>
+        <div id="map-panel"><div class="ph">Pick a pin to see what happened there.</div></div>
+      </div>
+      <div id="v-time" hidden><div class="tl" id="tl"></div></div>
+    </div>
+    <div id="work-detail" hidden></div>
+  </div>
+</div>
+
+<div class="modal" id="modal-licenses" role="dialog" aria-modal="true" aria-labelledby="lic-title">
+  <div class="paper wide">
+    <button class="x" data-close aria-label="Close">×</button>
+    <div class="k">03 / DIVE LICENSES</div>
+    <h2 id="lic-title">Certified in the water</h2>
+    <div class="licenses">
+      <article class="lic"><div class="org">MFI</div><div class="prog">Junior Mermaid Level 1–5</div><div class="issuer">Mermaid Federation International</div><div class="foot"><span>Issued Aug 2025</span></div></article>
+      <article class="lic"><div class="org">SSI</div><div class="prog">Mermaid Explorers</div><div class="issuer">SSI · Scuba Schools International</div><div class="foot"><span>Issued Aug 2022</span></div></article>
+      <article class="lic"><div class="org">SSI</div><div class="prog">Basic Freediver</div><div class="issuer">SSI · Scuba Schools International</div><div class="foot"><span>Issued Feb 2024</span></div></article>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal-traits" role="dialog" aria-modal="true" aria-labelledby="tr-title">
+  <div class="paper wide">
+    <button class="x" data-close aria-label="Close">×</button>
+    <div class="k">04 / TRAITS</div>
+    <h2 id="tr-title">Pearls from the shell</h2>
+    <div class="traits"><article class="trait"><svg class="pearl" width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="14" fill="#F3EBDD" stroke="#B9A98A" stroke-width="1.5"/><ellipse cx="12" cy="11.5" rx="4.5" ry="3" fill="#fff" opacity=".85"/></svg><h3>Social energy</h3><p>I get my energy from people and love joining events.</p></article><article class="trait"><svg class="pearl" width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="14" fill="#F3EBDD" stroke="#B9A98A" stroke-width="1.5"/><ellipse cx="12" cy="11.5" rx="4.5" ry="3" fill="#fff" opacity=".85"/></svg><h3>Open expression</h3><p>I'm good at putting my ideas and feelings into words.</p></article><article class="trait"><svg class="pearl" width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="14" fill="#F3EBDD" stroke="#B9A98A" stroke-width="1.5"/><ellipse cx="12" cy="11.5" rx="4.5" ry="3" fill="#fff" opacity=".85"/></svg><h3>Storyteller</h3><p>I love sharing my own story with others.</p></article><article class="trait"><svg class="pearl" width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="14" fill="#F3EBDD" stroke="#B9A98A" stroke-width="1.5"/><ellipse cx="12" cy="11.5" rx="4.5" ry="3" fill="#fff" opacity=".85"/></svg><h3>Born in the water</h3><p>In the water since I was six months old, swimming for 10 years.</p></article></div>
+  </div>
+</div>
+
+<div class="modal" id="modal-contact" role="dialog" aria-modal="true" aria-labelledby="ct-title">
+  <div class="paper wide">
+    <button class="x" data-close aria-label="Close">×</button>
+    <div class="k">05 / CONTACT</div>
+    <h2 id="ct-title">Send a message</h2>
+    <p>For speaking, performance and collaboration invitations, please reach out by email or find me on LinkedIn.</p>
+    <div class="links">
+      <a class="btn" href="mailto:murtail.lab@gmail.com">✉ murtail.lab@gmail.com</a>
+      <a class="btn" href="https://www.linkedin.com/in/leah-tienhsichang/" target="_blank" rel="noopener">in LinkedIn</a>
+    </div>
+    <div class="sub">Brands I've worked with</div>
+    <ul class="brands"><li>BENQ</li><li>SANSUI</li><li>富及第</li><li>樂澄童年書桌椅</li><li>TutorJr</li><li>51Talk</li><li>OneClass</li><li>淨淨</li><li>南一教育集團</li></ul>
+  </div>
+</div>
+
+<div class="modal" id="modal-updates" role="dialog" aria-modal="true" aria-labelledby="up-title">
+  <div class="paper wide">
+    <button class="x" data-close aria-label="Close">×</button>
+    <div class="k">06 / UPDATES</div>
+    <h2 id="up-title">What's new</h2>
+    <p class="muted">The three most recent entries, newest first.</p>
+    <ul class="works" id="updates-list"></ul>
+    <button class="chip on" id="see-all">See all selected works →</button>
+  </div>
+</div>
+
+<div class="modal" id="modal-pledge" role="dialog" aria-modal="true" aria-labelledby="pledge-title">
+  <div class="paper">
+    <button class="x" data-close aria-label="Close">×</button>
+    <div class="k">OCEAN ADVOCACY GAME / COMPLETE</div>
+    <h2 id="pledge-title">The Ocean Pledge</h2>
+    <p>You cleared the water and found every pearl. This is the promise behind the portfolio.</p>
+    <ul>
+      <li>Use less plastic, in the water and out of it.</li>
+      <li>Keep speaking up for the ocean and for young voices.</li>
+      <li>Help build a digital world that is transparent and kind.</li>
+      <li>Keep swimming, with curiosity and with care.</li>
+    </ul>
+    <p class="muted" id="learned-head"></p><div class="learned" id="learned"></div>
+    <button class="chip on" id="pledge-cta" type="button">Become an Ocean Advocate &rarr;</button>
+  </div>
+</div>
+
+<div class="modal" id="modal-game" role="dialog" aria-modal="true" aria-labelledby="game-title">
+  <div class="paper">
+    <button class="x" data-close aria-label="Close">×</button>
+    <div class="k">07 / OCEAN ADVOCACY GAME</div>
+    <h2 id="game-title">Ocean Advocacy Game</h2>
+    <ul class="gl">
+      <li><b>Clean the ocean:</b> 8 pieces of litter, each a different kind (like plastic bags, bottles and fishing nets), float in the water. Click each one to clear it. When they are all gone, the water turns from murky green to clear and bright, and more fish appear.</li>
+      <li><b>6 hidden pearls:</b> 3 in the shallows, 3 that only appear in the deep sea.</li>
+      <li><b>Learn as you play:</b> every piece of litter and every pearl opens an ocean fact card. Look for animals where they really live: seabirds near the surface, crabs on the seabed.</li>
+    </ul>
+    <p class="muted">Clear all the litter and find every pearl to unlock the Ocean Pledge.</p>
+    <button class="chip on" id="game-start" type="button">Start the game</button>
+  </div>
+</div>
+
+<div class="modal" id="modal-form" role="dialog" aria-modal="true" aria-labelledby="form-title">
+  <div class="paper">
+    <button class="x" data-close aria-label="Close">×</button>
+    <div class="k">OCEAN ADVOCATE / SIGN THE PLEDGE</div>
+    <h2 id="form-title">Become an Ocean Advocate</h2>
+    <p class="muted">Tell us a little about you and what you will do for the ocean and climate. You will get a personal certificate.</p>
+    <form id="pledge-form" novalidate>
+      <label for="f-name">Name</label>
+      <input id="f-name" maxlength="60" autocomplete="name" required>
+      <label for="f-email">Email</label>
+      <input id="f-email" type="email" maxlength="100" autocomplete="email" required>
+      <label for="f-ind">Industry</label>
+      <input id="f-ind" maxlength="60" placeholder="e.g. Education, Technology, Hospitality" required>
+      <label for="f-adv">My ocean / climate advocacy</label>
+      <textarea id="f-adv" maxlength="240" rows="4" placeholder="One thing I will do for the ocean or the climate…" required></textarea>
+      <p class="fine">Your name, email, industry and pledge are shared with the site owner only. Your certificate is created in your browser.</p>
+      <div id="f-err" role="alert"></div>
+      <button type="submit" class="chip on" id="f-submit">Submit</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="modal-cert" role="dialog" aria-modal="true" aria-labelledby="cert-title">
+  <div class="paper wide">
+    <button class="x" data-close aria-label="Close">×</button>
+    <div class="k">YOUR CERTIFICATE</div>
+    <h2 id="cert-title">Thank you, ocean advocate!</h2>
+    <p class="muted" id="cert-status"></p>
+    <canvas id="cert" width="1600" height="1130" role="img" aria-label="Ocean Advocacy certificate"></canvas>
+    <div class="cert-actions"><button class="chip on" id="cert-dl" type="button">Download certificate (PNG)</button><a class="chip" id="cert-mail" href="#" hidden>Email my pledge</a></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var loader=document.getElementById('loader'),count=document.getElementById('count');
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce){loader.classList.add('done');}
+  else{
+    var n=0,t=setInterval(function(){
+      n+=Math.ceil(Math.random()*7);
+      if(n>=100){n=100;clearInterval(t);setTimeout(function(){loader.classList.add('done');},350);}
+      count.textContent=n+'%';
+    },60);
+  }
+
+  /*WORKS_DATA*/var works=[{"id": "W01", "year": "2026", "cat": "showcase", "title": "COP31, the 31st Conference of the Parties to the UN Framework Convention on Climate Change", "role": "Climate Solutions Showcase", "date": "Nov 16–19, 2026", "loc": "Antalya, Türkiye", "org": "UNFCCC, GSA", "story": ["Leah Chang is a mermaid performer from Taiwan. When she performs underwater, she sees plastic in the ocean with her own eyes. So she wears a mermaid tail made of recycled plastic bottle fabric when she performs. Through her actions, she shows that the ocean and the climate are closely connected, and that protecting the ocean can really happen in our daily lives."], "yt": "https://youtu.be/HttQQSaTwTA", "photos": []}, {"id": "W02", "year": "2026", "cat": "showcase", "title": "UN World Future Intelligence Forum (WFIF 2026)", "role": "Future 100 Voices", "date": "Nov 5, 2026", "loc": "United Nations Bangkok", "org": "ESGIN", "story": ["Leah transforms recycled plastic bottles into fabric and mermaid tails, combining circular design, underwater sport and ocean conservation. Through performances and international events, she invites people to act for a healthier ocean."], "yt": "https://youtu.be/wYt6aUWm2dU", "photos": []}, {"id": "W03", "year": "2026", "cat": "talk", "title": "Digital@UNGA 2026", "role": "Speaker · “Building a Transparent and Kind Digital World”", "date": "Sep 25, 2026", "org": "ITU, UNDP, ESGIN", "story": ["A space for people from different places to talk about how to make the digital world more inclusive and safer, and to make sure young people's voices are heard."], "yt": "https://youtu.be/mbGHyg3CIzk?t=4655", "photos": ["W03_01.jpg"], "captions": ["“Responsible Digital for Youth” session poster, Digital@UNGA affiliate event"]}, {"id": "W04", "year": "2026", "cat": "talk", "title": "UN 11th STI Forum – Official Side Event: Responsible Digital Governance", "role": "Contributor · youth proposal on digital safety and governance", "date": "May 6–7, 2026", "loc": "Online", "org": "ECOSOC, UN IATT, UN-DESA, UNCTAD, ESGIN", "story": ["My proposal is about the problems I see in the online world.", "The digital world is already part of everyone's life. We use phones, tablets and AI, and we talk with other people online. But I've also noticed that the internet isn't always safe or kind. Sometimes a single comment can make someone sad for a long time.", "So I started to wonder: if we use digital technology every day, can we work together to make it a more transparent and kinder place?", "When I wrote this proposal in May, I asked myself: if I speak up about what I see, will someone at Meta, an AI company, or another digital platform read it one day? I don't know the answer. But if we never share our ideas, no one will ever know what we're thinking. So I wanted to try."], "photos": []}, {"id": "W05", "year": "2026", "cat": "talk", "title": "Genfuture Intelligence Global Forum on sustainability education innovation", "role": "Youth representative speaker", "story": ["For a student, education shouldn't be just a stack of red marks on exam papers. What children really long for is this: when I walk into school, when I go online, can I be treated gently as an individual? Can I grow up safely in an environment without hostility?"], "yt": "https://youtube.com/shorts/LPLorn2lhT8", "photos": ["W05_01.jpg", "W05_02.jpg"], "captions": ["On stage at the GenFuture Intelligence Global Forum", "GenFuture Intelligence Global Forum speaker poster"]}, {"id": "W06", "year": "2025", "cat": "talk", "title": "UN Social Innovation Program “Leader for Young Leaders”", "role": "Youth host", "story": ["Luca Uguzzoni is an international sustainability strategist and Managing Director at Ambi Group. He has advised the International Olympic Committee (IOC) and supported global mega events, including the Winter Olympic Games, the Napoli Universiade, and projects across Europe, Africa, Central Asia, and Asia.", "His work focuses on sustainability strategy, urban transformation, social impact, and digital governance.", "In “Youth × Cities × Olympics”, Luca shares how mega events inspire youth leadership, drive city innovation, and strengthen global collaboration for a changing world."], "yt": "https://youtu.be/HQUsCDJgeAs", "photos": []}, {"id": "W07", "year": "2025", "cat": "perf", "title": "National Dream Cup Swimming Championships Winter Series 2025", "role": "Opening performance", "date": "Nov 29, 2025", "loc": "Taipei, Taiwan", "org": "Dream Academy of Sport", "yt": "https://youtu.be/kiBLmwcGYS0", "photos": ["W07_01.jpg"], "captions": ["National Dream Cup opening ceremony poster"]}, {"id": "W08", "year": "2025", "cat": "perf", "title": "International Mermaid & Aquatic Arts Championship", "role": "Competitor", "date": "May 17, 2025", "loc": "Hotel Borobudur Jakarta, Indonesia", "org": "Hotel Borobudur Jakarta, Meracle Academy, Mermaid Federation International", "hl": ["4th place"], "yt": "https://youtu.be/1d1A-r413vw", "photos": ["W08_01.jpg"], "captions": ["International Mermaid & Aquatic Arts Championship poster"]}, {"id": "W09", "year": "2025", "cat": "perf", "title": "Play Island Outdoor Life Expo", "role": "Mermaid performance", "date": "Sep 13–14, 2025", "loc": "Taipei, Taiwan", "org": "Breatru Co., Ltd.", "yt": "https://youtu.be/Mrt6gRAm_JM", "photos": []}, {"id": "W10", "year": "2024", "cat": "talk", "title": "TEDx Youth @Dalongdong", "role": "Speaker", "date": "Apr 20, 2024", "loc": "Taipei, Taiwan", "org": "TEDx Youth @Dalongdong", "story": ["Leah became a mermaid when she was 4, after her mom showed her a news story about a mermaid gathering. On the TEDx stage she shared how that dream led to a mermaid tail made for Asian body types and sewn from recycled materials, because traditional production can harm the ocean. She hopes the beauty of mermaids can inspire more people to protect it."], "hl": ["Talk: “Unlocking sustainable magic from the ocean”"], "yt": "https://youtu.be/RWWRecTG54w", "photos": []}, {"id": "W11", "year": "2024", "cat": "perf", "title": "ADEX Asia Dive Expo, Singapore", "role": "Mermaid performance", "date": "Apr 12–14, 2024", "loc": "Singapore", "org": "Underwater360", "hl": ["Marking ADEX's 30th anniversary, this edition's theme was “Sustainable Blue Economy.”"], "yt": "https://youtu.be/LApftq5TzXw", "photos": ["W11_01.jpg"], "captions": ["ADEX Ocean Festival 2024 official poster"]}, {"id": "W12", "year": "2023", "cat": "perf", "title": "mini PRC Floral Spring Cup", "role": "Closing performance", "date": "May 28, 2023", "loc": "Competition Pool, Taichung North District Civil Sports Center", "org": "Taiwan Freediving Development Association (TFDA), One Freediving, Ms.Ocean", "photos": []}, {"id": "W13", "year": "2022", "cat": "perf", "title": "National Museum of Marine Science and Technology: Ocean Ambassador", "role": "Ocean ambassador · plastic-reduction art performance", "date": "Sep 11, 2022", "loc": "Keelung, Taiwan", "org": "National Museum of Marine Science and Technology", "story": ["Mermaid performances can love the ocean and the Earth, too.", "Big and little mermaids tell the story of marine waste on stage, quietly planting the seeds of ocean conservation in children's hearts."], "other": [["Watch on Instagram", "https://www.instagram.com/tv/CiXnAdHhQ4L/"]], "photos": []}];/*END_WORKS_DATA*/
+  var CATS={perf:'Performance & Competition',talk:'Talks & Forums',showcase:'Showcase'};
+  var list=document.getElementById('works-list'),detail=document.getElementById('work-detail'),listView=document.getElementById('works-list-view'),paper=document.getElementById('works-paper');
+  var filter='all';
+  function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+  function rowFor(w,onClick){
+    var li=document.createElement('li'),b=el('button','row');b.type='button';
+    b.appendChild(el('span','yr',w.year));
+    var t=el('span','rt');t.appendChild(el('span','ttl',w.title));if(w.role)t.appendChild(el('span','rl',w.role));
+    b.appendChild(t);b.appendChild(el('span','go','→'));
+    b.addEventListener('click',onClick);li.appendChild(b);return li;
+  }
+  function renderList(){
+    list.innerHTML='';
+    works.forEach(function(w,i){
+      if(filter!=='all'&&w.cat!==filter)return;
+      list.appendChild(rowFor(w,function(){showDetail(i);}));
+    });
+  }
+  function showList(){paper.classList.remove('has-photos');detail.hidden=true;listView.hidden=false;paper.scrollTop=0;}
+  function chip(txt,fn,label){var b=el('button','chip',txt);b.type='button';if(label)b.setAttribute('aria-label',label);b.addEventListener('click',fn);return b;}
+  function showDetail(i){
+    var w=works[i];
+    listView.hidden=true;detail.hidden=false;detail.innerHTML='';
+    var nav=el('div','dnav');
+    nav.appendChild(chip('← All works',showList));
+    nav.appendChild(el('span','sp'));
+    if(i>0)nav.appendChild(chip('‹ Newer',function(){showDetail(i-1);},'Newer work'));
+    if(i<works.length-1)nav.appendChild(chip('Older ›',function(){showDetail(i+1);},'Older work'));
+    detail.appendChild(nav);
+    detail.appendChild(el('div','k',w.year+' / '+CATS[w.cat].toUpperCase()));
+    var h=el('h2','dtitle',w.title);h.tabIndex=-1;detail.appendChild(h);
+    if(w.role)detail.appendChild(el('div','drole',w.role));
+    var hasP=!!(w.photos&&w.photos.length);
+    paper.classList.toggle('has-photos',hasP);
+    var body=el('div','dbody'+(hasP?' two':'')),txt=el('div','dtext');
+    body.appendChild(txt);
+    if(hasP){
+      var ph=el('div','dphotos'),g=el('div','gallery');
+      w.photos.forEach(function(src,k){
+        var f=document.createElement('figure'),im=document.createElement('img');
+        im.src=src;im.alt=(w.captions&&w.captions[k])||(w.title+' photo '+(k+1));im.loading='lazy';
+        f.appendChild(im);if(w.captions&&w.captions[k])f.appendChild(el('figcaption',null,w.captions[k]));
+        g.appendChild(f);
+      });
+      ph.appendChild(g);
+      if(w.photos.length>1){
+        var gn=el('div','gnav');
+        gn.appendChild(chip('‹',function(){g.scrollBy({left:-g.clientWidth,behavior:'smooth'});},'Previous photo'));
+        gn.appendChild(chip('›',function(){g.scrollBy({left:g.clientWidth,behavior:'smooth'});},'Next photo'));
+        ph.appendChild(gn);
+      }
+      body.appendChild(ph);
+    }
+    var rows=[['Date',w.date],['Location',w.loc],['Organizer',w.org]].filter(function(r){return r[1];});
+    if(rows.length){var dl=el('dl','meta');rows.forEach(function(r){dl.appendChild(el('dt',null,r[0]));dl.appendChild(el('dd',null,r[1]));});txt.appendChild(dl);}
+    if(w.story&&w.story.length){var st=el('div','dstory');w.story.forEach(function(p){st.appendChild(el('p',null,p));});txt.appendChild(st);}
+    if(w.hl&&w.hl.length){var ul=el('ul','dhl');w.hl.forEach(function(t){ul.appendChild(el('li',null,t));});txt.appendChild(ul);}
+    var links=el('div','links');
+    if(w.yt){var a=el('a','btn','▶ Watch on YouTube');a.href=w.yt;a.target='_blank';a.rel='noopener';links.appendChild(a);}
+    (w.other||[]).forEach(function(o){var a=el('a','btn',o[0]);a.href=o[1];a.target='_blank';a.rel='noopener';links.appendChild(a);});
+    if(links.childNodes.length)txt.appendChild(links);
+    detail.appendChild(body);
+    paper.scrollTop=0;
+  }
+  renderList();
+  document.querySelectorAll('.chip[data-f]').forEach(function(ch){
+    ch.addEventListener('click',function(){
+      document.querySelectorAll('.chip[data-f]').forEach(function(x){x.classList.remove('on');});
+      ch.classList.add('on');filter=ch.getAttribute('data-f');renderList();
+    });
+  });
+
+  var up=document.getElementById('updates-list');
+  works.slice(0,3).forEach(function(w,i){
+    up.appendChild(rowFor(w,function(){var o=opener;closeM();openM('modal-works',o);showDetail(i);}));
+  });
+
+  var current=null,opener=null;
+  function openM(id,btn){current=document.getElementById(id);opener=btn;if(id==='modal-works')showList();if(id==='modal-about')newNote();current.classList.add('open');var x=current.querySelector('[data-close]');if(x)x.focus();}
+  function closeM(){if(!current)return;sfx('close');current.classList.remove('open');if(opener)opener.focus();current=null;}
+  document.querySelectorAll('[data-open]').forEach(function(b){b.addEventListener('click',function(){openM(b.getAttribute('data-open'),b);});});
+  document.querySelectorAll('[data-close]').forEach(function(b){b.addEventListener('click',closeM);});
+  document.querySelectorAll('.modal').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)closeM();});});
+  document.getElementById('see-all').addEventListener('click',function(){var o=opener;closeM();openM('modal-works',o);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeM();});
+
+  /* ================= v2: sound, ocean fx, dive, notes, map, timeline ================= */
+  var REDUCE=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function isMobile(){return window.matchMedia&&window.matchMedia('(max-width:720px)').matches;}
+  function clamp(v,a,b){return v<a?a:(v>b?b:v);}
+
+  /* ---------- sound (synthesised, no files) ---------- */
+  var AC=null,mg=null,amb=null,soundOn=true,lastHover=0,SEA_VOL=0.85;
+  function noiseBuf(sec,brown){
+    var b=AC.createBuffer(1,Math.floor(AC.sampleRate*sec),AC.sampleRate),d=b.getChannelData(0),l=0;
+    for(var i=0;i<d.length;i++){var w=Math.random()*2-1;if(brown){l=(l+0.02*w)/1.02;d[i]=l*3.5;}else d[i]=w;}
+    return b;
+  }
+  var seaGain=null;
+  function startAmb(){
+    var bus=AC.createBiquadFilter();bus.type='lowpass';bus.frequency.value=9000;bus.connect(mg);amb={f:bus};
+    seaGain=AC.createGain();seaGain.gain.value=0;seaGain.connect(bus);
+    fetch('sea-loop.mp3').then(function(r){return r.arrayBuffer();}).then(function(buf){
+      return new Promise(function(res,rej){AC.decodeAudioData(buf,res,rej);});
+    }).then(function(ab){
+      var src=AC.createBufferSource();src.buffer=ab;src.loop=true;src.connect(seaGain);src.start();
+      seaGain.gain.setTargetAtTime(SEA_VOL,AC.currentTime,1.2);
+    }).catch(function(){
+      try{var au=new Audio('sea-loop.mp3');au.loop=true;au.volume=0.6;au.play();amb.el=au;}catch(e){}
+    });
+  }
+  function initAudio(){
+    if(AC)return;
+    var C=window.AudioContext||window.webkitAudioContext;if(!C)return;
+    try{AC=new C();}catch(e){AC=null;return;}
+    mg=AC.createGain();mg.gain.value=soundOn?1:0;mg.connect(AC.destination);
+    try{startAmb();}catch(e){}
+  }
+  function env(g,t,a,d,peak){g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(peak,t+a);g.gain.exponentialRampToValueAtTime(0.0001,t+a+d);}
+  function tone(type,f1,f2,dur,peak,delay){
+    var t=AC.currentTime+(delay||0),o=AC.createOscillator(),g=AC.createGain();
+    o.type=type;o.frequency.setValueAtTime(f1,t);o.frequency.exponentialRampToValueAtTime(f2,t+dur);
+    env(g,t,0.005,dur,peak);o.connect(g);g.connect(mg);o.start(t);o.stop(t+dur+0.06);
+  }
+  function burst(dur,peak,ftype,f1,f2,delay){
+    var t=AC.currentTime+(delay||0),s=AC.createBufferSource();s.buffer=noiseBuf(1,false);
+    var f=AC.createBiquadFilter();f.type=ftype;f.frequency.setValueAtTime(f1,t);f.frequency.exponentialRampToValueAtTime(f2,t+dur);
+    var g=AC.createGain();env(g,t,0.01,dur,peak);s.connect(f);f.connect(g);g.connect(mg);s.start(t);s.stop(t+dur+0.06);
+  }
+  var SFX={
+    bubble:function(){tone('sine',380+Math.random()*200,900+Math.random()*400,0.09,0.12);},
+    cork:function(){tone('sine',260,70,0.12,0.4);burst(0.08,0.25,'bandpass',1200,600);setTimeout(function(){if(AC&&soundOn)SFX.bubble();},130);},
+    paper:function(){burst(0.28,0.18,'highpass',2500,6000);burst(0.2,0.1,'bandpass',1500,3000,0.08);},
+    tag:function(){tone('triangle',620,300,0.05,0.3);tone('triangle',420,240,0.07,0.2,0.07);},
+    chime:function(){tone('sine',880,880,0.5,0.18);tone('sine',1320,1320,0.6,0.12,0.08);tone('sine',1760,1760,0.7,0.08,0.16);},
+    whoosh:function(){burst(0.35,0.2,'bandpass',400,2400);},
+    ping:function(){tone('sine',1000,1000,1.1,0.2);tone('sine',1004,1004,1.3,0.08,0.02);},
+    close:function(){tone('sine',500,300,0.08,0.1);}
+  };
+  function sfx(n){
+    if(!AC||!soundOn)return;
+    var run=function(){try{SFX[n]();}catch(e){}};
+    if(AC.state==='running')run();
+    else if(AC.state==='suspended'&&AC.resume){AC.resume().then(run,function(){});}
+  }
+  function unlock(){
+    initAudio();
+    if(AC&&AC.state==='suspended'&&AC.resume){try{AC.resume();}catch(e){}}
+  }
+  ['pointerdown','keydown','touchend'].forEach(function(ev){document.addEventListener(ev,unlock,{passive:true});});
+  var sndBtn=document.getElementById('snd');
+  setTimeout(function(){sndBtn.classList.add('nudge');},1500);
+  sndBtn.addEventListener('click',function(){
+    soundOn=!soundOn;
+    sndBtn.setAttribute('aria-pressed',soundOn?'true':'false');
+    document.getElementById('snd-t').textContent=soundOn?'Sound on':'Sound off';
+    sndBtn.setAttribute('aria-label',soundOn?'Sound on. Click to turn off.':'Sound off. Click to turn on.');
+    sndBtn.classList.remove('nudge');
+    if(mg){mg.gain.cancelScheduledValues(AC.currentTime);mg.gain.setTargetAtTime(soundOn?1:0,AC.currentTime,0.05);}
+    if(amb&&amb.el){if(soundOn)amb.el.play();else amb.el.pause();}
+    if(soundOn){initAudio();sfx('bubble');}
+  });
+
+  /* ---------- objects: per-object animation, sound, particles ---------- */
+  var FX={'modal-about':['bob','cork',1.0],'modal-works':['tilt','paper',1.2],'modal-licenses':['swing','tag',0.8],
+          'modal-traits':['shiver','chime',1.4],'modal-contact':['lift','whoosh',0.7],'modal-updates':['scan','ping',1.1],'modal-game':['tilt','pop',1.0]};
+  document.querySelectorAll('.hang').forEach(function(b){
+    var k=FX[b.getAttribute('data-open')];if(!k)return;
+    b.setAttribute('data-fx',k[0]);b.style.setProperty('--z',k[2]);
+    b.addEventListener('mouseenter',function(){
+      var now=Date.now();if(now-lastHover<180)return;lastHover=now;sfx('bubble');
+      var r=b.getBoundingClientRect();
+      for(var i=0;i<(k[0]==='shiver'?7:3);i++)addBubble(r.left+r.width*(0.3+Math.random()*0.4),r.top+r.height*0.4,{pearl:k[0]==='shiver',vy:0.5+Math.random()*0.8});
+    });
+    if(k[0]==='bob'){
+      var popping=false;
+      b.addEventListener('click',function(e){
+        e.stopImmediatePropagation();
+        if(popping||REDUCE&&false)return;
+        popping=true;sfx('cork');
+        var r0=b.getBoundingClientRect();
+        for(var q=0;q<12;q++)addBubble(r0.left+r0.width*(0.3+Math.random()*0.4),r0.top+r0.height*0.08,{vy:0.9+Math.random()*1.4,r:2+Math.random()*6});
+        if(REDUCE){popping=false;openM('modal-about',b);return;}
+        b.classList.add('popping');
+        setTimeout(function(){sfx('paper');},180);
+        setTimeout(function(){b.classList.remove('popping');popping=false;openM('modal-about',b);},950);
+      },true);
+    }
+    b.addEventListener('click',function(){
+      if(k[0]!=='bob')sfx(k[1]);
+      var r=b.getBoundingClientRect();
+      for(var i=0;i<(k[0]==='bob'?14:8);i++)addBubble(r.left+r.width*(0.2+Math.random()*0.6),r.top+r.height*(0.1+Math.random()*0.5),{vy:0.7+Math.random()*1.3,r:2+Math.random()*6});
+    });
+  });
+
+  /* ---------- notes from the bottle (drawn from Leah's own story) ---------- */
+  var NOTES=[
+    "I've been in the water since I was six months old.",
+    "When I was 4, a news story about a mermaid gathering changed everything for me.",
+    "When I perform, I wear a mermaid tail made of recycled plastic bottle fabric.",
+    "I've performed as a mermaid at ADEX in Singapore.",
+    "I competed at the International Mermaid & Aquatic Arts Championship in Jakarta.",
+    "In 2024 I gave a TEDx Youth talk: “Unlocking sustainable magic from the ocean”.",
+    "I wrote a youth proposal for the UN 11th STI Forum about a safer, kinder digital world.",
+    "I believe that if we never share our ideas, no one will ever know what we're thinking.",
+    "I hosted a UN Social Innovation program, Leader for Young Leaders.",
+    "I believe protecting the ocean can really happen in our daily lives."
+  ];
+  var noteIdx=-1,noteEl=document.getElementById('note-text');
+  function newNote(){
+    var i;do{i=Math.floor(Math.random()*NOTES.length);}while(i===noteIdx&&NOTES.length>1);
+    noteIdx=i;noteEl.textContent=NOTES[i];
+  }
+  document.getElementById('note-next').addEventListener('click',function(){newNote();sfx('paper');});
+
+  /* ---------- works views: list / map / timeline ---------- */
+  var vList=document.getElementById('v-list'),vMap=document.getElementById('v-map'),vTime=document.getElementById('v-time');
+  var mapBuilt=false,tlBuilt=false;
+  function setView(v){
+    vList.hidden=v!=='list';vMap.hidden=v!=='map';vTime.hidden=v!=='time';
+    document.querySelectorAll('.seg .chip').forEach(function(c){c.classList.toggle('on',c.getAttribute('data-v')===v);});
+    if(v==='map'&&!mapBuilt)buildMap();
+    if(v==='time'){if(!tlBuilt)buildTimeline();updateMer();revealTl();}
+    paper.scrollTop=0;sfx('bubble');
+  }
+  document.querySelectorAll('.seg .chip').forEach(function(c){c.addEventListener('click',function(){setView(c.getAttribute('data-v'));});});
+
+  var LAND=[
+    [[-168,66],[-162,70],[-140,70],[-125,70],[-110,73],[-95,72],[-82,68],[-80,63],[-93,60],[-92,57],[-82,55],[-79,52],[-77,60],[-70,60],[-62,57],[-56,52],[-60,47],[-66,45],[-70,43],[-75,38],[-76,35],[-81,31],[-80,26],[-83,29],[-90,30],[-97,27],[-97,22],[-92,18],[-87,21],[-88,16],[-83,15],[-83,10],[-79,9],[-77.5,8.5],[-85,10],[-92,14],[-105,20],[-110,24],[-114,31],[-112,26],[-117,32],[-124,40],[-124,48],[-130,54],[-140,60],[-150,60],[-158,57],[-165,54],[-160,60],[-166,62],[-168,66]],
+    [[-77.5,8.5],[-72,12],[-64,10.5],[-60,8],[-52,5],[-50,0],[-44,-2],[-35,-5],[-35,-9],[-39,-14],[-40,-22],[-48,-26],[-53,-34],[-58,-35],[-57,-39],[-65,-41],[-65,-47],[-68,-52],[-69,-55],[-72,-52],[-74,-46],[-73,-38],[-71,-30],[-70,-18],[-76,-14],[-81,-6],[-80,-2],[-78,2],[-77.5,8.5]],
+    [[-55,60],[-45,60],[-20,70],[-18,78],[-30,83],[-55,82],[-70,78],[-58,70],[-55,60]],
+    [[-9,37],[-9,43],[-2,43.5],[-1,46],[-4,48],[2,51],[8,54],[9,57],[5,59],[5,62],[12,66],[18,70],[26,71],[33,70],[40,67],[44,68],[60,69],[70,73],[82,75],[100,77],[112,74],[130,72],[140,72],[160,70],[170,70],[180,68],[180,65],[170,60],[160,60],[156,51],[150,59],[140,54],[141,48],[135,43],[130,42],[129,35],[126,35],[126,38],[125,40],[121,40],[122,37],[119,37],[121,32],[122,30],[120,26],[116,23],[110,21],[108,21.5],[106,18],[109,12],[105,9],[101,13],[100,8],[103,1.5],[100,3],[98,8],[98,16],[94,17],[92,21],[88,22],[80,15],[78,8],[73,16],[70,21],[66,25],[57,25.5],[56,27],[50,30],[48,30],[50,26],[51,24],[56,26],[58,23],[55,17],[44,12.5],[43,16],[35,28],[34.5,31],[36,36],[30,36.5],[27,37],[26,40],[24,40],[23,37],[21,37],[20,40],[19,42],[13,45.5],[12,44],[18,40],[16,38],[15.5,40.5],[12,41.5],[9,44],[7,43.5],[3,43],[0,39],[-2,37],[-5,36],[-9,37]],
+    [[-17,21],[-13,28],[-9,32],[-6,35.8],[10,37],[11,33],[20,32],[25,32],[32,31],[34,27],[38,20],[43,12],[51,12],[48,5],[40,-3],[40,-10],[35,-18],[33,-26],[27,-34],[20,-35],[18,-32],[14,-22],[12,-14],[13,-6],[9,3],[9,4.5],[4,6],[-4,5],[-8,4.5],[-13,8],[-17,14],[-17,21]],
+    [[114,-22],[122,-18],[130,-12],[136,-12],[137,-16],[142,-11],[146,-19],[153,-26],[151,-34],[147,-38],[140,-38],[135,-35],[131,-31],[124,-33],[115,-34],[114,-22]],
+    [[130,31],[132,34],[136,35.5],[140,41],[142,40],[141,36],[135,33.5],[130,31]],
+    [[120,22],[121.9,25],[121,25.2],[120,23]],
+    [[95,5.5],[98,4],[104,-2],[106,-6],[102,-4],[97,1],[95,5.5]],
+    [[105.5,-6.5],[114.5,-7.5],[114,-8.5],[106,-7],[105.5,-6.5]],
+    [[109,2],[111,1.5],[117,7],[119,5],[117,-1],[116,-4],[110,-3],[109,2]],
+    [[-5,50],[1,51],[2,53],[-2,56],[-4,58.5],[-6,57],[-3,54],[-5,50]],
+    [[44,-25],[47,-25],[50,-15],[49,-12],[44,-17],[44,-25]],
+    [[172,-34],[178,-38],[175,-41],[172,-41],[172,-34]],
+    [[172,-41],[174,-42],[170,-46],[167,-46],[172,-41]],
+    [[120,18],[122,18],[124,13],[126,7],[125,6],[122,8],[120,14],[120,18]],
+    [[-24,64],[-14,64],[-14,66],[-22,66],[-24,64]]
+  ];
+  var PLACES={
+    taiwan:{name:'Taiwan',ll:[121,24],ids:['W05','W07','W09','W10','W12','W13']},
+    singapore:{name:'Singapore',ll:[103.8,1.35],ids:['W11']},
+    jakarta:{name:'Jakarta',ll:[106.8,-6.2],ids:['W08']},
+    bangkok:{name:'Bangkok',ll:[100.5,13.75],ids:['W02']},
+    antalya:{name:'Antalya',ll:[30.7,36.9],ids:['W01']},
+    online:{name:'Online & other',ll:null,ids:['W03','W04','W06']}
+  };
+  function px(ll){return [ll[0]+180,84-ll[1]];}
+  function svgEl(t,a){var e=document.createElementNS('http://www.w3.org/2000/svg',t);for(var k in a)e.setAttribute(k,a[k]);return e;}
+  function workIndex(id){for(var i=0;i<works.length;i++)if(works[i].id===id)return i;return -1;}
+  function selectPlace(key){
+    var pl=PLACES[key],panel=document.getElementById('map-panel');
+    panel.innerHTML='';
+    panel.appendChild(el('div','ph',pl.name+' · '+pl.ids.length+(pl.ids.length===1?' work':' works')));
+    var ul=el('ul','works');
+    pl.ids.forEach(function(id){var i=workIndex(id);if(i>-1)ul.appendChild(rowFor(works[i],function(){showDetail(i);}));});
+    panel.appendChild(ul);
+    document.querySelectorAll('.pin').forEach(function(p){p.classList.toggle('on',p.getAttribute('data-k')===key);});
+    sfx('bubble');
+  }
+  function buildMap(){
+    mapBuilt=true;
+    var svg=svgEl('svg',{viewBox:'0 0 360 150',role:'img','aria-label':'World map of selected works'});
+    svg.appendChild(svgEl('rect',{x:0,y:0,width:360,height:150,fill:'#CFE3E0'}));
+    for(var lo=-150;lo<=180;lo+=30)svg.appendChild(svgEl('line',{x1:lo+180,y1:0,x2:lo+180,y2:150,'class':'grat'}));
+    for(var la=60;la>=-60;la-=30)svg.appendChild(svgEl('line',{x1:0,y1:84-la,x2:360,y2:84-la,'class':'grat'}));
+    LAND.forEach(function(poly){
+      svg.appendChild(svgEl('polygon',{'class':'land',points:poly.map(function(p){var q=px(p);return q[0].toFixed(1)+','+q[1].toFixed(1);}).join(' ')}));
+    });
+    var tw=px(PLACES.taiwan.ll);
+    ['singapore','jakarta','bangkok','antalya'].forEach(function(k){
+      var q=px(PLACES[k].ll),mx=(tw[0]+q[0])/2,my=Math.min(tw[1],q[1])-(k==='antalya'?32:14);
+      svg.appendChild(svgEl('path',{'class':'arc',d:'M'+tw[0]+' '+tw[1]+' Q'+mx+' '+my+' '+q[0]+' '+q[1]}));
+    });
+    Object.keys(PLACES).forEach(function(k){
+      var pl=PLACES[k];if(!pl.ll)return;
+      var q=px(pl.ll),g=svgEl('g',{'class':'pin',tabindex:'0',role:'button','data-k':k,'aria-label':pl.name+', '+pl.ids.length+' works'});
+      var r=2.6+Math.min(pl.ids.length,6)*0.35;
+      g.appendChild(svgEl('circle',{cx:q[0],cy:q[1],r:r+4,fill:'rgba(0,0,0,0)'}));
+      g.appendChild(svgEl('circle',{'class':'ring',cx:q[0],cy:q[1],r:r}));
+      g.appendChild(svgEl('circle',{'class':'dot',cx:q[0],cy:q[1],r:r}));
+      var t=svgEl('text',{x:q[0]+(k==='antalya'?-r-1.5:r+2),y:q[1]+1.8,'text-anchor':k==='antalya'?'end':'start'});
+      t.textContent=pl.name+(pl.ids.length>1?' · '+pl.ids.length:'');g.appendChild(t);
+      g.addEventListener('click',function(){selectPlace(k);});
+      g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();selectPlace(k);}});
+      svg.appendChild(g);
+    });
+    document.getElementById('mapwrap').appendChild(svg);
+    var pc=document.getElementById('placechips');
+    Object.keys(PLACES).forEach(function(k){
+      var b=el('button','chip',(k==='online'?'🌐 ':'')+PLACES[k].name+' ('+PLACES[k].ids.length+')');b.type='button';
+      b.addEventListener('click',function(){selectPlace(k);});pc.appendChild(b);
+    });
+  }
+
+  var tlEl=document.getElementById('tl'),merEl=null;
+  function buildTimeline(){
+    tlBuilt=true;tlEl.innerHTML='';
+    tlEl.appendChild(el('div','tl-line'));
+    merEl=el('div','tl-mer');
+    merEl.innerHTML='<img src="starfish.png" alt="">';
+    tlEl.appendChild(merEl);
+    var last='';
+    for(var i=works.length-1;i>=0;i--){
+      (function(i){
+        var w=works[i];
+        if(w.year!==last){tlEl.appendChild(el('div','tl-year',w.year));last=w.year;}
+        var b=el('button','tl-item');b.type='button';
+        b.appendChild(el('span','ttl',w.title));
+        if(w.role)b.appendChild(el('span','rl',w.role));
+        b.addEventListener('click',function(){showDetail(i);});
+        tlEl.appendChild(b);
+      })(i);
+    }
+  }
+  function updateMer(){
+    if(!merEl||vTime.hidden)return;
+    var top=paper.scrollTop+paper.clientHeight*0.35-tlEl.offsetTop;
+    var ct=clamp(top,0,Math.max(0,tlEl.offsetHeight-56));merEl.style.top=ct+'px';merEl.firstChild.style.transform='rotate('+(ct*0.35)+'deg)';
+  }
+  var io=null;
+  function revealTl(){
+    var items=tlEl.querySelectorAll('.tl-item');
+    if(!('IntersectionObserver' in window)||REDUCE){items.forEach(function(x){x.classList.add('in');});return;}
+    if(io)io.disconnect();
+    io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{root:paper,threshold:0.1});
+    items.forEach(function(x){x.classList.remove('in');io.observe(x);});
+  }
+  paper.addEventListener('scroll',updateMer,{passive:true});
+
+  /* ---------- ocean canvas: bubbles, fish, light, plankton ---------- */
+  var cv=document.getElementById('fx'),cx=cv.getContext('2d'),W=0,H=0,DPR=1;
+  var bubbles=[],fish=[],plank=[],depth=0,dcur=0,mx=0,my=0,tmx=0,tmy=0,lastMove=0,tPrev=0;
+  function sizeCv(){DPR=Math.min(window.devicePixelRatio||1,2);W=window.innerWidth;H=window.innerHeight;cv.width=Math.floor(W*DPR);cv.height=Math.floor(H*DPR);cx.setTransform(DPR,0,0,DPR,0,0);}
+  function addBubble(x,y,o){
+    if(REDUCE)return;o=o||{};
+    bubbles.push({x:x,y:y,r:o.r||(2+Math.random()*5),vy:o.vy||(0.4+Math.random()*0.9),ph:Math.random()*6.28,w:0.4+Math.random()*0.8,pearl:!!o.pearl});
+    if(bubbles.length>170)bubbles.shift();
+  }
+  function newFish(init){
+    var dir=Math.random()<0.5?1:-1;
+    fish.push({x:init?Math.random()*W:(dir>0?-70:W+70),y:H*(0.12+Math.random()*0.75),dir:dir,sp:(0.25+Math.random()*0.6)*dir,s:9+Math.random()*16,ph:Math.random()*6.28,c:Math.random()<0.5?'255,190,90':'120,225,225'});
+  }
+  function initFx(){
+    sizeCv();
+    for(var i=0;i<4;i++)newFish(true);
+    for(var j=0;j<46;j++)plank.push({x:Math.random()*W,y:Math.random()*H,r:0.8+Math.random()*1.8,ph:Math.random()*6.28,s:0.05+Math.random()*0.15});
+  }
+  function drawFish(f,t){
+    var wag=Math.sin(t*0.006+f.ph)*0.35,s=f.s,a=0.5-dcur*0.15;
+    cx.save();cx.translate(f.x,f.y);cx.scale(f.dir,1);cx.globalAlpha=a;
+    cx.fillStyle='rgba('+f.c+',1)';
+    cx.beginPath();cx.ellipse(0,0,s,s*0.45,0,0,6.283);cx.fill();
+    cx.beginPath();cx.moveTo(-s*0.8,0);cx.lineTo(-s*1.6,-s*0.5+wag*s*0.6);cx.lineTo(-s*1.6,s*0.5+wag*s*0.6);cx.closePath();cx.fill();
+    cx.fillStyle='rgba(20,49,59,.8)';cx.beginPath();cx.arc(s*0.55,-s*0.1,s*0.09,0,6.283);cx.fill();
+    cx.restore();
+  }
+  function frame(t){
+    requestAnimationFrame(frame);
+    if(document.hidden)return;
+    var dt=Math.min(40,t-tPrev);tPrev=t;
+    /* depth smoothing + dom */
+    dcur+=(depth-dcur)*0.07;if(Math.abs(depth-dcur)<0.0005)dcur=depth;
+    deepEl.style.opacity=(dcur*0.78).toFixed(3);
+    gDot.style.top=(dcur*100)+'%';
+    var m=Math.round(dcur*30);if(m!==lastM){lastM=m;gM.textContent=m+' m';gZ.textContent=dcur<0.33?'Shallows':(dcur<0.75?'Open water':'Deep blue');}
+    envBtn.classList.toggle('glow',dcur>0.7);document.body.classList.toggle('dive',dcur>0.5);
+    var hintTxt=(dcur<0.04&&!usedLever)?'Tap DIVE or drag the depth lever →':(dcur>0.9?(game.on?'Glowing pearls hide down here — find them!':'Move your torch to explore · something is glowing…'):'');
+    if(hintTxt!==lastHint){lastHint=hintTxt;hintEl.textContent=hintTxt;hintEl.style.opacity=hintTxt?1:0;}
+    v3Frame(t,dt);
+    if(amb&&AC){amb.f.frequency.value=(700+(1-dcur)*7800)*(1-0.9*muf);}
+    /* parallax */
+    mx+=(tmx-mx)*0.06;my+=(tmy-my)*0.06;
+    if(!REDUCE&&!isMobile()){boardEl.style.setProperty('--px',mx.toFixed(3));boardEl.style.setProperty('--py',my.toFixed(3));}
+    if(REDUCE)return;
+    /* canvas */
+    cx.clearRect(0,0,W,H);
+    var shallow=1-dcur;
+    if(shallow>0.05){
+      for(var i=0;i<5;i++){
+        var x0=(i+0.5)/5*W+Math.sin(t*0.0003+i*1.7)*50,w0=40+i*8;
+        var g=cx.createLinearGradient(0,0,0,H*0.9);g.addColorStop(0,'rgba(255,255,230,'+((0.08+0.08*cleanSm)*shallow)+')');g.addColorStop(1,'rgba(255,255,230,0)');
+        cx.fillStyle=g;cx.beginPath();cx.moveTo(x0-w0*0.3,0);cx.lineTo(x0+w0*0.3,0);cx.lineTo(x0+w0*1.6+Math.sin(t*0.0004+i)*30,H*0.9);cx.lineTo(x0-w0*1.2,H*0.9);cx.closePath();cx.fill();
+      }
+    }
+    if(dcur>0.3){
+      for(var p=0;p<plank.length;p++){
+        var q=plank[p];q.y-=q.s;q.x+=Math.sin(t*0.0007+q.ph)*0.2;if(q.y<-4){q.y=H+4;q.x=Math.random()*W;}
+        var tw=0.5+0.5*Math.sin(t*0.002+q.ph);
+        cx.fillStyle='rgba(150,255,235,'+(dcur*0.7*tw)+')';cx.beginPath();cx.arc(q.x,q.y,q.r,0,6.283);cx.fill();
+      }
+    }
+    var want=4+Math.round(dcur*4)+Math.round(cleanSm*3);
+    while(fish.length<want)newFish(false);
+    for(var f=fish.length-1;f>=0;f--){
+      var fi=fish[f];fi.x+=fi.sp*dt*0.06*(1+dcur*0.3);fi.y+=Math.sin(t*0.001+fi.ph)*0.15;
+      drawFish(fi,t);
+      if((fi.dir>0&&fi.x>W+80)||(fi.dir<0&&fi.x<-80)){fish.splice(f,1);}
+    }
+    if(Math.random()<0.07+dcur*0.12&&bubbles.length<110)addBubble(Math.random()*W,H+8,{vy:0.4+Math.random()*0.8});
+    for(var b=bubbles.length-1;b>=0;b--){
+      var bu=bubbles[b];bu.y-=bu.vy*(dt/16);bu.x+=Math.sin(t*0.002*bu.w+bu.ph)*0.35;
+      if(bu.y<-12){bubbles.splice(b,1);continue;}
+      cx.beginPath();cx.arc(bu.x,bu.y,bu.r,0,6.283);
+      if(bu.pearl){cx.fillStyle='rgba(255,255,255,.85)';cx.fill();cx.strokeStyle='rgba(232,163,61,.9)';cx.lineWidth=1;cx.stroke();}
+      else{cx.fillStyle='rgba(255,255,255,.14)';cx.fill();cx.strokeStyle='rgba(255,255,255,.75)';cx.lineWidth=1;cx.stroke();
+        cx.fillStyle='rgba(255,255,255,.7)';cx.beginPath();cx.arc(bu.x-bu.r*0.35,bu.y-bu.r*0.35,bu.r*0.22,0,6.283);cx.fill();}
+    }
+  }
+  var deepEl=document.getElementById('deep'),gDot=document.getElementById('gdot'),gM=document.getElementById('gm'),gZ=document.getElementById('gz'),
+      hintEl=document.getElementById('divehint'),boardEl=document.querySelector('.board'),envBtn=document.querySelector('[data-open="modal-contact"]'),
+      lastM=-1,lastHint='';
+  initFx();
+  window.addEventListener('resize',sizeCv);
+  requestAnimationFrame(frame);
+
+  /* ---------- input: pointer bubbles + parallax + dive ---------- */
+  window.addEventListener('pointermove',function(e){
+    tmx=(e.clientX/W-0.5)*2;tmy=(e.clientY/H-0.5)*2;
+    var now=Date.now();
+    if(now-lastMove>110&&e.pointerType!=='touch'&&!current){lastMove=now;addBubble(e.clientX,e.clientY,{r:1.5+Math.random()*3,vy:0.6+Math.random()*0.7});}
+  },{passive:true});
+  document.addEventListener('pointerdown',function(e){
+    if(current)return;
+    for(var i=0;i<6;i++)addBubble(e.clientX+(Math.random()*24-12),e.clientY+(Math.random()*16-8),{r:1.5+Math.random()*5,vy:0.7+Math.random()*1.2});
+  },{passive:true});
+  function diveBy(d){tweenId++;depth=clamp(depth+d,0,1);}
+  window.addEventListener('wheel',function(e){
+    if(isMobile()||current)return;
+    diveBy(e.deltaY/1800);
+  },{passive:true});
+  var ty=null;
+  window.addEventListener('touchstart',function(e){ty=e.touches[0].clientY;},{passive:true});
+  window.addEventListener('touchmove',function(e){
+    if(isMobile()||current||ty===null)return;
+    var y=e.touches[0].clientY;diveBy((ty-y)/500);ty=y;
+  },{passive:true});
+  window.addEventListener('keydown',function(e){
+    if(current||isMobile())return;
+    if(e.key==='ArrowDown'||e.key==='PageDown')diveBy(0.12);
+    else if(e.key==='ArrowUp'||e.key==='PageUp')diveBy(-0.12);
+  });
+  /* mobile: depth is set only by the slider, never by scrolling or touching */
+
+
+  /* ================= v4: depth lever, torch, Ocean Advocacy Game, pledge, certificate ================= */
+  function ss(a,b,x){x=clamp((x-a)/(b-a),0,1);return x*x*(3-2*x);}
+  var torchEl=document.getElementById('torch'),beaconEl=document.getElementById('beacon'),murkEl=document.getElementById('murk'),
+      toastEl=document.getElementById('toast'),trashBox=document.getElementById('trashbox'),diveBtn=document.getElementById('divebtn'),
+      gaugeEl=document.getElementById('gauge'),glineEl=document.getElementById('gline'),
+      clN=document.getElementById('cl-n'),clBar=document.getElementById('cl-bar'),plN=document.getElementById('pl-n');
+  var tx=W*0.6,ty=H*0.5,ttx=tx,tty=ty;
+  var tweenId=0,tweenActive=false,usedLever=false,muf=0;
+  var toastT=0;
+  function toast(msg,ms){toastEl.textContent=msg;toastEl.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('on');},ms||2600);}
+  function setTorchR(){torchEl.style.setProperty('--tr',(isMobile()?125:Math.max(150,Math.min(W,H)*0.21))+'px');}
+  setTorchR();window.addEventListener('resize',setTorchR);
+  SFX.pop=function(){tone('sine',520,1300,0.12,0.22);burst(0.07,0.1,'highpass',3000,7000);};
+  function switchM(id){if(current){current.classList.remove('open');}current=null;openM(id,null);}
+
+  /* ---- depth tween + lever ---- */
+  function tweenDepth(to,ms){
+    var id=++tweenId,from=depth,t0=performance.now();tweenActive=true;
+    function step(now){
+      if(id!==tweenId){tweenActive=false;return;}
+      var k=clamp((now-t0)/ms,0,1),e=k<0.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+      depth=from+(to-from)*e;
+      if(k<1)requestAnimationFrame(step);else tweenActive=false;
+    }
+    requestAnimationFrame(step);
+  }
+  diveBtn.addEventListener('click',function(){
+    usedLever=true;sfx('whoosh');
+    var down=depth<0.5;tweenDepth(down?1:0,down?2600:2200);
+    for(var i=0;i<14;i++)addBubble(W*(0.3+Math.random()*0.6),H+Math.random()*40,{r:2+Math.random()*5,vy:1.2+Math.random()*1.4});
+  });
+  var gdrag=false,lastGM=-1;
+  function setFromY(y){var r=glineEl.getBoundingClientRect();depth=clamp((y-r.top)/r.height,0,1);var m=Math.round(depth*10);if(m!==lastGM){lastGM=m;sfx('bubble');}}
+  gaugeEl.addEventListener('pointerdown',function(e){
+    if(e.target.closest('#divebtn'))return;
+    gdrag=true;tweenId++;usedLever=true;try{gaugeEl.setPointerCapture(e.pointerId);}catch(x){}
+    setFromY(e.clientY);e.preventDefault();
+  });
+  gaugeEl.addEventListener('pointermove',function(e){if(gdrag)setFromY(e.clientY);});
+  ['pointerup','pointercancel'].forEach(function(ev){gaugeEl.addEventListener(ev,function(){gdrag=false;});});
+  glineEl.setAttribute('role','slider');glineEl.setAttribute('tabindex','0');glineEl.setAttribute('aria-label','Dive depth');
+  glineEl.setAttribute('aria-valuemin','0');glineEl.setAttribute('aria-valuemax','30');glineEl.setAttribute('aria-valuenow','0');
+  glineEl.addEventListener('keydown',function(e){
+    if(e.key==='ArrowDown'||e.key==='ArrowRight'){tweenId++;depth=clamp(depth+0.1,0,1);e.preventDefault();e.stopPropagation();}
+    else if(e.key==='ArrowUp'||e.key==='ArrowLeft'){tweenId++;depth=clamp(depth-0.1,0,1);e.preventDefault();e.stopPropagation();}
+  });
+
+  /* ---- torch follows pointer / finger ---- */
+  window.addEventListener('pointermove',function(e){if(isMobile())return;ttx=e.clientX;tty=e.clientY;},{passive:true});
+  window.addEventListener('touchmove',function(e){if(isMobile())return;if(e.touches[0]){ttx=e.touches[0].clientX;tty=e.touches[0].clientY;}},{passive:true});
+  window.addEventListener('touchstart',function(e){if(isMobile())return;if(e.touches[0]){ttx=e.touches[0].clientX;tty=e.touches[0].clientY;}},{passive:true});
+
+  /* ================= the game ================= */
+  var game={on:false,done:false};
+  var TRASH_N=8,cleaned=0,spawned=0,nextTrash=Infinity,cleanSm=0,murkV=0;
+  var LT=[
+    {img:'lt_turtle',ar:.54,wf:1.3,y:[.26,.52],mv:'swim',name:'plastic bag',title:'Sea turtles & plastic bags',text:'A floating plastic bag can look just like a jellyfish, a favorite turtle snack. A global study estimated that about half of all sea turtles have eaten plastic.',short:'Bags can look like jellyfish to a hungry turtle.'},
+    {img:'lt_crab_cup',ar:1.03,wf:1.0,y:[.72,.8],mv:'floor',name:'cup',title:'Hermit crabs & plastic homes',text:'Hermit crabs need a bigger shell as they grow. Researchers have documented hundreds of crabs around the world wearing plastic caps, cups and other litter instead of snail shells.',short:'Hermit crabs are moving into plastic litter.'},
+    {img:'lt_pelican',ar:.91,wf:1.0,y:[.08,.2],mv:'air',name:'fishing line',title:'Seabirds & fishing line',text:'Pelicans and other seabirds can get tangled in discarded fishing line and rope, which makes it hard to fly, swim or eat. Picking line up before it reaches the sea helps them.',short:'Lost fishing line can tangle seabirds.'},
+    {img:'lt_crab_net',ar:.68,wf:1.2,y:[.72,.8],mv:'floor',name:'ghost net',title:'Ghost nets',text:'Lost or abandoned fishing nets, called ghost nets, keep trapping animals for years. In the Great Pacific Garbage Patch, at least 46% of the plastic by weight was fishing nets.',short:'Ghost nets keep trapping sea life for years.'},
+    {img:'lt_clown',ar:.46,wf:1.25,y:[.42,.66],mv:'swim',name:'cup and straw',title:'Straws & cups',text:'Plastic straws and cups are among the most common items found by volunteers at beach cleanups around the world. Skipping the straw is a tiny habit that adds up.',short:'Straws and cups top the beach cleanup lists.'},
+    {img:'lt_bottle',ar:.43,wf:1.1,y:[.12,.38],mv:'float',name:'bottle',title:'Bottles & microplastics',text:'Sunlight and waves break plastic bottles into tiny pieces under 5 mm called microplastics. Small sea animals can swallow them, and they can stay in the ocean for a very long time.',short:'Bottles break into microplastics.'},
+    {img:'lt_butt',ar:1.0,wf:.62,y:[.1,.34],mv:'float',name:'cigarette butt',title:'Cigarette butts',text:'Cigarette filters are made of plastic (cellulose acetate), not cotton. For over three decades they topped the list of items found in the International Coastal Cleanup.',short:'Cigarette filters are plastic, too.'},
+    {img:'lt_cutlery',ar:2.32,wf:.42,y:[.34,.62],mv:'float',name:'cutlery',title:'Plastic cutlery',text:'Sea turtles and seabirds often mistake plastic cutlery for food, and it breaks into smaller, sharper pieces. Carrying your own reusable set is an easy fix.',short:'Wildlife can mistake cutlery for food.'}
+  ];
+  var PF={
+    s:[
+      {title:'Protected seas bounce back',text:'A review of studies found fish biomass was on average 670% higher inside fully protected marine reserves than in unprotected waters. Protection works.'},
+      {title:'Coastal climate heroes',text:'Mangroves and salt marshes store three to five times more carbon per area than tropical forests. Protecting them helps the ocean and the climate.'},
+      {title:'People power',text:'In one day of the 2019 International Coastal Cleanup, volunteers in 116 countries collected about 32.5 million items. Small actions add up.'}
+    ],
+    d:[
+      {title:'The High Seas Treaty',text:'Since 17 January 2026 the High Seas Treaty is in force. It gives countries a legal way to protect ocean life beyond national borders, about two-thirds of the ocean.'},
+      {title:'A whale comeback',text:'Humpback whales in the western South Atlantic dropped to about 450 in the 1950s. After hunting was stopped, they have recovered to roughly 25,000.'},
+      {title:'30 by 30',text:'In 2022, 196 countries agreed to protect at least 30% of the world’s land and sea by 2030. Young voices can help keep that promise.'}
+    ]};
+  var deck=[],seenL={},learned=[],gotS=0,gotD=0,factT=0;
+  function shuf(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function newDeck(){var a=[],i;for(i=0;i<LT.length;i++)a.push(i);shuf(a);var b=a.slice();shuf(b);return a.concat(b.slice(0,Math.max(0,TRASH_N-LT.length)));}
+  var factEl=document.getElementById('fact');
+  function hideFact(){clearTimeout(factT);factEl.classList.remove('on');document.body.classList.remove('factOn');}
+  function showFact(o){
+    clearTimeout(factT);
+    var ori=isMobile()?'P':'L';
+    factEl.className=ori+' '+o.kind;
+    factEl.querySelector('.fbg').src=''+ori+'_'+o.card+'.jpg';
+    factEl.querySelector('b').textContent=o.title;
+    factEl.querySelector('p').textContent=o.text;
+    void factEl.offsetWidth;
+    factEl.classList.add('on');document.body.classList.add('factOn');
+    toastEl.classList.remove('on');
+    factT=setTimeout(hideFact,16000);
+  }
+  factEl.addEventListener('click',function(e){e.stopPropagation();hideFact();});
+  window.addEventListener('keydown',function(e){if(e.key==='Escape')hideFact();});
+  var pearls=[].slice.call(document.querySelectorAll('.hpearl')),gotP=0;
+  function updHud(){clN.textContent=cleaned+'/'+TRASH_N;clBar.style.width=(cleaned/TRASH_N*100)+'%';plN.textContent=gotP+'/'+pearls.length;}
+  function checkWin(){
+    if(game.done||!game.on)return;
+    var litterLeft=TRASH_N-cleaned,pearlsLeft=pearls.length-gotP;
+    if(litterLeft===0&&pearlsLeft===0){
+      game.done=true;game.on=false;
+      setTimeout(function(){
+        hideFact();document.body.classList.remove('playing');sfx('chime');
+        var lh=document.getElementById('learned-head'),lb=document.getElementById('learned');
+        if(lh&&lb){lh.textContent='You learned '+learned.length+' ocean facts along the way:';lb.innerHTML='';learned.forEach(function(t){var c=document.createElement('span');c.textContent=t;lb.appendChild(c);});}
+        switchM('modal-pledge');
+      },factEl.classList.contains('on')?6500:1200);
+    }else if(litterLeft===0){toast('All litter cleared! '+pearlsLeft+' pearl'+(pearlsLeft>1?'s':'')+' still hidden — try the deep sea.',4200);}
+    else if(pearlsLeft===0){toast('All pearls found! '+litterLeft+' piece'+(litterLeft>1?'s':'')+' of litter left to clean.',4200);}
+  }
+  function spawnTrash(){
+    if(!deck.length)deck=newDeck();
+    var k=deck.shift(),T=LT[k],mob=isMobile();
+    var el=document.createElement('button');el.type='button';el.className='trash';
+    el.setAttribute('aria-label',T.title+'. Click to clean it up.');
+    var w=(mob?78:100)*T.wf*(0.92+Math.random()*0.18),h=w*T.ar;
+    var x0=mob?10:270,x1=W-(mob?64:110)-w,x=x0+Math.random()*Math.max(40,x1-x0);
+    var yf=T.y[0]+Math.random()*(T.y[1]-T.y[0]),y=Math.max(54,Math.min(H-h-70,H*yf-h/2));
+    var dx,dy,r;
+    if(T.mv==='floor'){dx=Math.random()*90-45;dy=Math.random()*8-4;r=2;}
+    else if(T.mv==='swim'){dx=Math.random()*180-90;dy=Math.random()*40-20;r=5;}
+    else if(T.mv==='air'){dx=Math.random()*120-60;dy=Math.random()*20-10;r=4;}
+    else{dx=Math.random()*70-35;dy=Math.random()*30-15;r=12;}
+    el.style.cssText='left:'+x.toFixed(0)+'px;top:'+y.toFixed(0)+'px;--s:'+w.toFixed(0)+'px;--dur:'+(6+Math.random()*5).toFixed(1)+'s;--dx:'+dx.toFixed(0)+'px;--dy:'+dy.toFixed(0)+'px;--r0:'+(-r*Math.random()).toFixed(0)+'deg;--r1:'+(r*Math.random()).toFixed(0)+'deg';
+    el.innerHTML='<img src="'+T.img+'.png" alt="" draggable="false">';
+    el.addEventListener('click',function(e){
+      e.stopPropagation();if(el.classList.contains('gone'))return;
+      el.classList.add('gone');sfx('pop');
+      var r=el.getBoundingClientRect();
+      for(var i=0;i<7;i++)addBubble(r.left+r.width/2+(Math.random()*20-10),r.top+r.height/2,{r:2+Math.random()*4,vy:0.8+Math.random()*1.2});
+      setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},400);
+      cleaned++;updHud();
+      learned.push(T.title);showFact({kind:'lit',card:T.img.replace('lt_',''),title:T.title,text:T.text});
+      checkWin();
+    });
+    trashBox.appendChild(el);spawned++;
+  }
+  pearls.forEach(function(p){
+    p.addEventListener('click',function(e){
+      e.stopPropagation();if(p.classList.contains('got')||!game.on)return;
+      p.classList.add('got');gotP++;updHud();sfx('chime');
+      var r=p.getBoundingClientRect();
+      for(var i=0;i<10;i++)addBubble(r.left+17,r.top+17,{r:2+Math.random()*3,vy:0.8+Math.random()*1.2,pearl:true});
+      var deepP=p.getAttribute('data-d')==='d',F=deepP?PF.d[gotD++]:PF.s[gotS++];
+      learned.push(F.title);
+      showFact({kind:'pearl',card:'pearl',title:F.title,text:F.text});
+      checkWin();
+    });
+  });
+  function resetGame(){
+    cleaned=0;spawned=0;gotP=0;cleanSm=0;gotS=0;gotD=0;seenL={};learned=[];deck=newDeck();hideFact();
+    [].slice.call(trashBox.children).forEach(function(n){trashBox.removeChild(n);});
+    pearls.forEach(function(p){p.classList.remove('got');p.style.opacity='';p.style.pointerEvents='';});
+    updHud();
+  }
+  var gameBtn=document.getElementById('game-start'),gameOpener=document.querySelector('[data-open="modal-game"]')||document.createElement('i');
+  gameOpener.addEventListener('click',function(){gameBtn.textContent=game.on?'Resume the game':(game.done?'Play again':'Start the game');});
+  gameBtn.addEventListener('click',function(){
+    if(game.on){closeM();return;}
+    resetGame();game.on=true;game.done=false;document.body.classList.add('playing');
+    nextTrash=performance.now()+500;
+    closeM();
+    toast('Game on! Clean up 8 pieces of litter and find 6 hidden pearls.',4200);
+  });
+
+  /* ================= pledge -> form -> certificate ================= */
+  document.getElementById('pledge-cta').addEventListener('click',function(){sfx('tag');switchM('modal-form');});
+  var form=document.getElementById('pledge-form'),fErr=document.getElementById('f-err'),fSubmit=document.getElementById('f-submit'),
+      certEl=document.getElementById('cert'),certStatus=document.getElementById('cert-status'),certMail=document.getElementById('cert-mail'),certDl=document.getElementById('cert-dl');
+  var OWNER_EMAIL='murtail.lab@gmail.com',lastRec=null;
+  var SUBMIT_URL=''; /* when hosted on your own domain: set this to your endpoint (it receives the JSON record via POST) */
+  function saveRecord(rec){
+    var cl=window.claude;
+    var viaDb=(cl&&cl.use)?Promise.all([cl.use('db'),cl.use('user')]).then(function(r){
+      var db=r[0],u=r[1];if(!db||!u)return false;
+      return Promise.resolve(u.id()).then(function(uid){return db.collection('pledges').doc(String(uid)).set(rec);}).then(function(){return true;});
+    }).catch(function(){return false;}):Promise.resolve(false);
+    var viaUrl=SUBMIT_URL?fetch(SUBMIT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(rec)}).then(function(r){return r.ok;}).catch(function(){return false;}):Promise.resolve(false);
+    var both=Promise.all([viaDb,viaUrl]).then(function(r){return r[0]||r[1];});
+    var timeout=new Promise(function(res){setTimeout(function(){res(false);},9000);});
+    return Promise.race([both,timeout]);
+  }
+  function wrapText(g,txt,x,y,maxW,lh,maxLines){
+    var words=txt.split(/\s+/),lines=[],cur='',i;
+    for(i=0;i<words.length;i++){
+      var w=words[i],test=cur?cur+' '+w:w;
+      if(g.measureText(test).width>maxW&&cur){lines.push(cur);cur=w;}else cur=test;
+      /* very long unbroken strings (e.g. CJK): split by characters */
+      while(g.measureText(cur).width>maxW&&cur.length>1){var k=cur.length;while(k>1&&g.measureText(cur.slice(0,k)).width>maxW)k--;lines.push(cur.slice(0,k));cur=cur.slice(k);}
+    }
+    if(cur)lines.push(cur);
+    if(lines.length>maxLines){lines=lines.slice(0,maxLines);lines[maxLines-1]=lines[maxLines-1].replace(/.{0,2}$/,'')+'…';}
+    for(i=0;i<lines.length;i++)g.fillText(lines[i],x,y+i*lh);
+    return y+(lines.length-1)*lh;
+  }
+  function drawCert(rec,img){
+    var g=certEl.getContext('2d'),w=1600,h=1130,x;
+    g.clearRect(0,0,w,h);g.textAlign='center';g.textBaseline='alphabetic';
+    g.fillStyle='#F6F0E0';g.fillRect(0,0,w,h);
+    var sea=g.createLinearGradient(0,h-300,0,h);sea.addColorStop(0,'#D5E9E6');sea.addColorStop(1,'#78B2B6');
+    g.fillStyle=sea;g.beginPath();g.moveTo(0,h-200);for(x=0;x<=w;x+=20)g.lineTo(x,h-200+Math.sin(x/95)*18);g.lineTo(w,h);g.lineTo(0,h);g.closePath();g.fill();
+    g.fillStyle='rgba(15,76,92,.18)';g.beginPath();g.moveTo(0,h-140);for(x=0;x<=w;x+=20)g.lineTo(x,h-140+Math.sin(x/70+1.5)*14);g.lineTo(w,h);g.lineTo(0,h);g.closePath();g.fill();
+    g.strokeStyle='#0F4C5C';g.lineWidth=10;g.strokeRect(40,40,w-80,h-80);g.lineWidth=2;g.strokeRect(64,64,w-128,h-128);
+    g.fillStyle='#E8A33D';[[64,64],[w-64,64],[64,h-64],[w-64,h-64]].forEach(function(p){g.beginPath();g.arc(p[0],p[1],11,0,6.283);g.fill();});
+    if(img){g.drawImage(img,w-250,110,124,132);g.save();g.translate(150,176);g.rotate(-0.35);g.drawImage(img,-50,-54,100,108);g.restore();}
+    var serif='Georgia,"Times New Roman","Noto Serif CJK TC",serif',mono='"Courier New",monospace';
+    try{g.letterSpacing='6px';}catch(e){}
+    g.fillStyle='#3d5560';g.font='600 24px '+mono;g.fillText('TIEN HSI CHANG (LEAH)  ·  OCEAN PORTFOLIO',w/2,150);
+    try{g.letterSpacing='0px';}catch(e){}
+    g.fillStyle='#14313B';g.font='italic 54px '+serif;g.fillText('Certificate of',w/2,250);
+    g.font='bold 104px '+serif;g.fillText('Ocean Advocacy',w/2,355);
+    g.fillStyle='#E8A33D';g.fillRect(w/2-90,385,180,5);
+    g.fillStyle='#3d5560';g.font='32px '+serif;g.fillText('is proudly presented to',w/2,450);
+    var nm=rec.name,fs=112;g.fillStyle='#0F4C5C';
+    do{g.font='italic '+fs+'px '+serif;fs-=4;}while(g.measureText(nm).width>1180&&fs>40);
+    g.fillText(nm,w/2,570);
+    g.strokeStyle='#8F7B52';g.lineWidth=2;g.beginPath();g.moveTo(w/2-420,596);g.lineTo(w/2+420,596);g.stroke();
+    g.fillStyle='#3d5560';g.font='30px '+serif;g.fillText('for clearing the water, finding all six hidden pearls, and making this pledge:',w/2,664);
+    g.fillStyle='#14313B';g.font='italic 40px '+serif;
+    var endY=wrapText(g,'“'+rec.advocacy+'”',w/2,740,1120,56,4);
+    g.fillStyle='#3d5560';g.font='600 26px '+mono;g.fillText(('INDUSTRY  ·  '+rec.industry).toUpperCase().slice(0,70),w/2,Math.max(endY+90,880));
+    g.fillStyle='#14313B';g.font='600 24px '+mono;
+    var d=new Date(rec.submittedAt),ds=d.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+    g.textAlign='left';g.fillText('Issued '+ds,130,1000);g.textAlign='right';g.fillText('No. '+rec.certId,w-130,1000);
+    g.textAlign='center';g.font='600 20px '+mono;g.fillStyle='rgba(20,49,59,.85)';g.fillText('Ocean Advocacy Game  ·  Tien Hsi Chang (Leah) Portfolio',w/2,1038);
+  }
+  function showCert(rec,saved){
+    lastRec=rec;
+    var img=new Image(),done=false;
+    function go(i){if(done)return;done=true;drawCert(rec,i);}
+    img.onload=function(){go(img);};img.onerror=function(){go(null);};img.src='starfish.png';
+    setTimeout(function(){go(null);},2500);
+    var body='Name: '+rec.name+'\nEmail: '+rec.email+'\nIndustry: '+rec.industry+'\nOcean / climate advocacy: '+rec.advocacy+'\nCertificate no.: '+rec.certId;
+    certMail.href='mailto:'+OWNER_EMAIL+'?subject='+encodeURIComponent('Ocean Advocate pledge — '+rec.name)+'&body='+encodeURIComponent(body);
+    if(saved){certStatus.textContent='Your pledge has been sent to the portfolio owner. Download your certificate below.';certMail.hidden=true;}
+    else{certStatus.textContent='We couldn’t send your pledge automatically from here. Please email it with the button below, then download your certificate.';certMail.hidden=false;}
+    sfx('chime');switchM('modal-cert');
+  }
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var name=document.getElementById('f-name').value.trim(),email=document.getElementById('f-email').value.trim(),
+        ind=document.getElementById('f-ind').value.trim(),adv=document.getElementById('f-adv').value.trim();
+    if(!name){fErr.textContent='Please enter your name.';return;}
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){fErr.textContent='Please enter a valid email address.';return;}
+    if(!ind){fErr.textContent='Please tell us your industry.';return;}
+    if(adv.length<5){fErr.textContent='Please write your ocean / climate advocacy (a sentence is fine).';return;}
+    fErr.textContent='';
+    var rec={name:name,email:email,industry:ind,advocacy:adv,submittedAt:new Date().toISOString(),certId:'OA-'+Math.random().toString(36).slice(2,8).toUpperCase()};
+    fSubmit.disabled=true;fSubmit.textContent='Submitting…';
+    saveRecord(rec).then(function(ok){fSubmit.disabled=false;fSubmit.textContent='Submit';showCert(rec,ok);});
+  });
+  certDl.addEventListener('click',function(){
+    if(!lastRec)return;
+    var fn='Ocean-Advocate-Certificate-'+lastRec.name.replace(/[^\w㐀-鿿]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40)+'.png';
+    try{
+      certEl.toBlob(function(b){
+        if(!b){toast('Couldn’t create the image — please take a screenshot of the certificate.',4200);return;}
+        var cl=window.claude,p=(cl&&cl.use)?cl.use('downloads'):Promise.resolve(null);
+        p.then(function(dl){
+          if(dl)return dl.save({filename:fn,data:b});
+          var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fn;document.body.appendChild(a);a.click();a.remove();
+        }).catch(function(err){if(err&&err.code==='declined')return;toast('Download isn’t available here — please take a screenshot of the certificate.',4200);});
+      },'image/png');
+    }catch(err){toast('Download isn’t available here — please take a screenshot of the certificate.',4200);}
+  });
+
+  /* ---- per-frame ---- */
+  var lastAria=-1,lastBtn='';
+  function v3Frame(t,dt){
+    if(isMobile()){ttx=W*0.5;tty=H*0.5;}
+    tx+=(ttx-tx)*0.2;ty+=(tty-ty)*0.2;
+    var tk=ss(0.3,0.85,dcur);
+    torchEl.style.opacity=(tk*(isMobile()?0.7:1)).toFixed(3);
+    if(tk>0.002){torchEl.style.setProperty('--tx',tx.toFixed(1)+'px');torchEl.style.setProperty('--ty',ty.toFixed(1)+'px');}
+    var bo=ss(0.55,0.9,dcur);
+    if(bo>0.01){var r=envBtn.getBoundingClientRect();beaconEl.style.transform='translate('+(r.left+r.width/2).toFixed(0)+'px,'+(r.top+r.height/2).toFixed(0)+'px)';}
+    beaconEl.style.opacity=(bo*0.9).toFixed(2);
+    if(game.on){
+      var pp=ss(0.5,0.85,dcur);
+      for(var i=0;i<pearls.length;i++){var p=pearls[i];if(p.getAttribute('data-d')==='d'&&!p.classList.contains('got')){p.style.opacity=pp.toFixed(2);p.style.pointerEvents=pp>0.5?'auto':'none';}}
+    }
+    cleanSm+=((cleaned/TRASH_N)-cleanSm)*0.03;
+    murkV+=((game.on?(1-cleanSm):0)-murkV)*0.05;
+    murkEl.style.opacity=murkV.toFixed(3);
+    var mm=Math.round(dcur*30);if(mm!==lastAria){lastAria=mm;glineEl.setAttribute('aria-valuenow',mm);}
+    var bt=dcur>0.5?'SURFACE ↑':'DIVE ↓';if(bt!==lastBtn){lastBtn=bt;diveBtn.textContent=bt;}
+    if(game.on&&spawned<TRASH_N&&t>nextTrash&&!document.hidden&&!factEl.classList.contains('on')&&trashBox.children.length<5){spawnTrash();nextTrash=t+1400+Math.random()*1600;}
+  }
+
+  /* ---- intro: start deep, surface after the loader ---- */
+  if(!REDUCE){depth=1;dcur=1;}
+  (function(){
+    var ld=document.getElementById('loader');
+    function go(){
+      if(REDUCE)return;
+      setTimeout(function(){
+        tweenDepth(0,4200);sfx('whoosh');
+        for(var i=0;i<26;i++)addBubble(Math.random()*W,H+Math.random()*80,{r:2+Math.random()*6,vy:1.6+Math.random()*1.6});
+        toast('Surfacing… use the depth slider on the right to dive again.',3600);
+      },450);
+    }
+    if(ld.classList.contains('done')){go();return;}
+    var mo=new MutationObserver(function(){if(ld.classList.contains('done')){mo.disconnect();go();}});
+    mo.observe(ld,{attributes:true,attributeFilter:['class']});
+  })();
+  updHud();
+
+})();
+</script>
+</body>
+</html>
