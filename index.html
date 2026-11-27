@@ -436,7 +436,8 @@ body.playing .hpearl{display:block}
 #lang button:focus-visible{outline:2px solid var(--sea);outline-offset:-3px}
 @media (max-width:720px){#topbar{right:10px;top:10px;gap:6px}#topbar #snd{width:32px;height:32px}#topbar #snd svg{width:16px;height:16px}#lang{height:32px;font-size:11px}#lang button{padding:0 10px}}
 
-.vbox{display:block;position:relative;width:100%;aspect-ratio:16/9;margin:14px 0 4px;padding:0;border:1px solid var(--rope);border-radius:10px;overflow:hidden;cursor:pointer;color:#fff;background:linear-gradient(rgba(15,76,92,.55),rgba(10,40,52,.75)),#0F4C5C url(bg-ocean.jpg) center/cover;text-align:center}
+.dtext{width:100%;min-width:0;box-sizing:border-box}
+.vbox{display:block;box-sizing:border-box;position:relative;width:100%;aspect-ratio:16/9;margin:14px 0 4px;padding:0;border:1px solid var(--rope);border-radius:10px;overflow:hidden;cursor:pointer;color:#fff;background:linear-gradient(rgba(15,76,92,.55),rgba(10,40,52,.75)),#0F4C5C url(bg-ocean.jpg) center/cover;text-align:center}
 .vbox.short{aspect-ratio:9/16;width:min(100%,300px);max-height:62vh}
 .vbox:hover .vplay{transform:translate(-50%,-62%) scale(1.07)}
 .vbox:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
